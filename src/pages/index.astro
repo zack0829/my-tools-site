@@ -1,17 +1,155 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { tools, categories, getToolsByCategory } from '../data/tools';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="線上工具集 — 免費、安全、100% 瀏覽器處理"
+  description="免費線上工具集，包含圖片轉換、PDF 處理、開發者工具等。所有操作在瀏覽器完成，檔案不上傳伺服器，完全保護您的隱私。"
+>
+  <!-- Hero 區 -->
+  <section class="bg-gradient-to-b from-blue-600 to-blue-700 text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-6">
+      <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+        線上工具集<br />
+        <span class="text-blue-200">100% 瀏覽器處理</span>
+      </h1>
+      <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+        免費使用所有工具，檔案在您的裝置上處理，<strong class="text-white">絕對不上傳伺服器</strong>，隱私完全由您掌控。
+      </p>
+
+      <!-- 搜尋框 -->
+      <div class="max-w-xl mx-auto mt-8">
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-300 text-xl pointer-events-none">🔍</span>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="搜尋工具名稱或功能，例如：壓縮、PDF、Base64…"
+            class="w-full bg-white/10 backdrop-blur border border-white/30 text-white placeholder-blue-200 rounded-xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition"
+            aria-label="搜尋工具"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 工具網格區 -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+
+    <!-- 搜尋結果（預設隱藏） -->
+    <div id="search-results" class="hidden mb-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-5">
+        搜尋結果：<span id="search-query-label" class="text-blue-600"></span>
+      </h2>
+      <div id="search-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <p id="no-results" class="hidden text-gray-500 text-center py-10">
+        找不到符合的工具，請嘗試其他關鍵字。
+      </p>
+    </div>
+
+    <!-- 依分類顯示 -->
+    <div id="category-sections">
+      {categories.map((category) => {
+        const categoryTools = getToolsByCategory(category);
+        return (
+          <div class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+              <span class="w-1 h-6 bg-blue-600 rounded-full inline-block"></span>
+              {category}
+              <span class="text-sm font-normal text-gray-400">（{categoryTools.length} 個工具）</span>
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {categoryTools.map((tool) => (
+                <ToolCard tool={tool} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- 為什麼選擇我們 -->
+  <section class="bg-gray-100 border-t border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">為什麼選擇我們？</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+
+        <div class="bg-white rounded-2xl p-7 shadow-sm text-center space-y-3">
+          <div class="text-5xl">🔒</div>
+          <h3 class="text-xl font-bold text-gray-900">隱私優先</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            所有檔案處理完全在您的瀏覽器中進行，不會上傳至任何伺服器，您的資料絕對安全。
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-7 shadow-sm text-center space-y-3">
+          <div class="text-5xl">💸</div>
+          <h3 class="text-xl font-bold text-gray-900">完全免費</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            所有工具永久免費，無隱藏費用、無訂閱制、無使用次數限制。
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-7 shadow-sm text-center space-y-3">
+          <div class="text-5xl">🚀</div>
+          <h3 class="text-xl font-bold text-gray-900">無需註冊</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            開啟網頁即可直接使用，不需要建立帳號、不需要登入，省去繁複流程。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { searchTools } from '../data/tools';
+
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const searchResults = document.getElementById('search-results') as HTMLDivElement;
+  const searchGrid = document.getElementById('search-grid') as HTMLDivElement;
+  const noResults = document.getElementById('no-results') as HTMLParagraphElement;
+  const categorySections = document.getElementById('category-sections') as HTMLDivElement;
+  const searchQueryLabel = document.getElementById('search-query-label') as HTMLSpanElement;
+
+  searchInput?.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+
+    if (!query) {
+      searchResults.classList.add('hidden');
+      categorySections.classList.remove('hidden');
+      return;
+    }
+
+    searchResults.classList.remove('hidden');
+    categorySections.classList.add('hidden');
+    searchQueryLabel.textContent = `「${query}」`;
+
+    const results = searchTools(query);
+    searchGrid.innerHTML = '';
+    noResults.classList.toggle('hidden', results.length > 0);
+
+    results.forEach((tool) => {
+      const href = `/tools/${tool.slug}`;
+      const card = document.createElement('a');
+      card.href = href;
+      card.className = 'group flex flex-col gap-3 bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200';
+      card.innerHTML = `
+        <div class="flex items-start justify-between">
+          <span class="text-3xl leading-none">${tool.icon}</span>
+          <span class="text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-2.5 py-0.5">${tool.category}</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">${tool.name}</h3>
+        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-1">${tool.description}</p>
+        <div class="flex items-center gap-1 text-sm font-medium text-blue-600 mt-auto">
+          <span>立即使用</span><span class="group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      `;
+      searchGrid.appendChild(card);
+    });
+  });
+</script>

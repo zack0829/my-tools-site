@@ -1,0 +1,40 @@
+---
+import type { Tool } from '../data/tools';
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+// 目前工具頁尚未實作，先連到 # 佔位
+const href = `/tools/${tool.slug}`;
+---
+
+<a
+  href={href}
+  class="group flex flex-col gap-3 bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200"
+>
+  <!-- 圖示 + 分類 -->
+  <div class="flex items-start justify-between">
+    <span class="text-3xl leading-none" aria-hidden="true">{tool.icon}</span>
+    <span class="text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-2.5 py-0.5">
+      {tool.category}
+    </span>
+  </div>
+
+  <!-- 名稱 -->
+  <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+    {tool.name}
+  </h3>
+
+  <!-- 描述 -->
+  <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-1">
+    {tool.description}
+  </p>
+
+  <!-- 使用按鈕提示 -->
+  <div class="flex items-center gap-1 text-sm font-medium text-blue-600 mt-auto">
+    <span>立即使用</span>
+    <span class="group-hover:translate-x-1 transition-transform">→</span>
+  </div>
+</a>

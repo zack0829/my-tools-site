@@ -1,0 +1,51 @@
+---
+const navLinks = [
+  { href: '/', label: '首頁' },
+  { href: '/about', label: '關於' },
+  { href: '/privacy', label: '隱私政策' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 font-bold text-xl text-blue-600 hover:text-blue-700 transition-colors">
+        <span class="text-2xl">🛠️</span>
+        <span>線上工具集</span>
+      </a>
+
+      <!-- 隱私標示 -->
+      <div class="hidden sm:flex items-center gap-1.5 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1">
+        <span class="text-base">🔒</span>
+        <span class="font-medium">100% 瀏覽器處理，檔案不上傳</span>
+      </div>
+
+      <!-- 導覽列 -->
+      <nav class="flex items-center gap-1">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class={[
+              'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+              currentPath === link.href
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+            ].join(' ')}
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
+
+    </div>
+  </div>
+
+  <!-- 行動版隱私標示 -->
+  <div class="sm:hidden bg-emerald-50 border-t border-emerald-100 py-1.5 text-center text-xs text-emerald-700 font-medium">
+    🔒 100% 瀏覽器處理，檔案不上傳
+  </div>
+</header>

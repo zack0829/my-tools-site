@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const lastUpdated = '2026 年 5 月 18 日';
+---
+
+<BaseLayout
+  title="隱私政策"
+  description="線上工具集隱私政策：我們不收集您的檔案，所有處理在瀏覽器本地完成。了解我們如何保護您的隱私。"
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-10">
+
+    <div class="space-y-3">
+      <h1 class="text-4xl font-extrabold text-gray-900">隱私政策</h1>
+      <p class="text-sm text-gray-400">最後更新：{lastUpdated}</p>
+      <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 text-emerald-800 font-medium">
+        🔒 重點摘要：我們的工具不會上傳您的任何檔案。所有處理均在您的瀏覽器本地執行。
+      </div>
+    </div>
+
+    {[
+      {
+        title: '1. 我們收集哪些資料',
+        content: `我們收集極少量的資料，且僅用於改善網站體驗：
+        \n• 匿名的頁面瀏覽統計（透過 Cloudflare Web Analytics，不使用 cookie，不追蹤個人身份）
+        \n• 基本的錯誤日誌，用於修復技術問題
+        \n我們不收集：您上傳或處理的任何檔案內容、您的姓名或電子郵件、任何可識別個人身份的資訊。`,
+      },
+      {
+        title: '2. 檔案如何處理',
+        content: `本站所有工具均使用瀏覽器端技術（JavaScript、Canvas API、Web Workers 等）在您的裝置上直接處理檔案。\n\n您選擇的檔案僅存在於瀏覽器記憶體中，處理完成後即可下載結果，關閉頁面後資料將被清除。您的檔案從未傳輸到我們的伺服器。`,
+      },
+      {
+        title: '3. Cookie 的使用',
+        content: `我們不使用追蹤 cookie。我們可能使用功能性的 localStorage 來暫存您的工具設定（例如：上次選擇的輸出品質），這些資料僅儲存在您的瀏覽器本地，不會傳送至我們的伺服器，您可隨時清除。`,
+      },
+      {
+        title: '4. 第三方服務',
+        content: `本站部署於 Cloudflare Pages，Cloudflare 可能會記錄基本的網路請求日誌（IP 位址等），這受 Cloudflare 自身的隱私政策約束。我們不使用 Google Analytics 或其他第三方追蹤服務。`,
+      },
+      {
+        title: '5. 資料保留',
+        content: `由於我們不收集您的個人資料或檔案內容，因此沒有需要保留或刪除的使用者資料。匿名統計資料可能保留最長 90 天。`,
+      },
+      {
+        title: '6. 您的權利',
+        content: `由於我們不持有您的個人資料，大多數資料存取/刪除請求並不適用。若您對我們收集的匿名統計資料有疑問，或發現任何隱私問題，歡迎透過以下方式聯絡我們。`,
+      },
+      {
+        title: '7. 政策變更',
+        content: `若本政策有重大變更，我們將在本頁面更新日期並說明變更內容。我們建議您定期查看本頁面。`,
+      },
+      {
+        title: '8. 聯絡我們',
+        content: `若您對本隱私政策有任何疑問，請至 GitHub Issues 提出，我們將盡快回覆。`,
+      },
+    ].map(({ title, content }) => (
+      <section class="space-y-3">
+        <h2 class="text-xl font-bold text-gray-900">{title}</h2>
+        <div class="text-gray-600 leading-relaxed whitespace-pre-line text-sm">{content}</div>
+      </section>
+    ))}
+
+  </div>
+</BaseLayout>

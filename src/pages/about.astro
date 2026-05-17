@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="關於我們"
+  description="了解線上工具集的理念：提供免費、安全、隱私優先的瀏覽器端工具，讓每個人都能輕鬆處理日常檔案。"
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+
+    <!-- 標題 -->
+    <div class="space-y-4">
+      <h1 class="text-4xl font-extrabold text-gray-900">關於我們</h1>
+      <p class="text-xl text-gray-600 leading-relaxed">
+        我們相信隱私是每個人的基本權利，好用的工具不應該以犧牲隱私為代價。
+      </p>
+    </div>
+
+    <!-- 核心理念 -->
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold text-gray-900">核心理念</h2>
+      <p class="text-gray-600 leading-relaxed">
+        線上工具集是一個專注於「瀏覽器端處理」的免費工具平台。我們提供圖片轉換、PDF 處理、開發者工具等多種實用功能，
+        所有運算都在您的裝置瀏覽器中完成，<strong>檔案絕對不會上傳到我們或任何第三方的伺服器</strong>。
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        這意味著您不需要擔心敏感文件外洩、不需要信任我們的伺服器安全性——因為您的資料從來就不離開您的裝置。
+      </p>
+    </section>
+
+    <!-- 我們的承諾 -->
+    <section class="space-y-5">
+      <h2 class="text-2xl font-bold text-gray-900">我們的承諾</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {[
+          { icon: '🔒', title: '零上傳政策', desc: '所有檔案處理均在瀏覽器本地執行，我們的伺服器永遠看不到您的檔案。' },
+          { icon: '💸', title: '永久免費', desc: '核心功能永久免費，沒有試用期限、沒有隱藏費用。' },
+          { icon: '🚀', title: '無需帳號', desc: '不需要註冊或登入，打開網頁即可立即使用。' },
+          { icon: '🌐', title: '開放透明', desc: '我們的技術原理公開透明，歡迎技術社群檢驗。' },
+        ].map(({ icon, title, desc }) => (
+          <div class="bg-gray-50 rounded-xl border border-gray-200 p-5 space-y-2">
+            <div class="text-2xl">{icon}</div>
+            <h3 class="font-semibold text-gray-900">{title}</h3>
+            <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 技術說明 -->
+    <section class="space-y-4">
+      <h2 class="text-2xl font-bold text-gray-900">技術說明</h2>
+      <p class="text-gray-600 leading-relaxed">
+        本站使用現代瀏覽器 API（如 Canvas API、File API、Web Workers）在客戶端完成所有運算。
+        網站本體部署於 Cloudflare Pages，為純靜態網站，不含任何後端伺服器邏輯。
+      </p>
+    </section>
+
+    <!-- CTA -->
+    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-8 text-center space-y-4">
+      <p class="text-lg font-semibold text-gray-900">準備好開始了嗎？</p>
+      <a
+        href="/"
+        class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl transition-colors"
+      >
+        瀏覽所有工具
+      </a>
+    </div>
+
+  </div>
+</BaseLayout>
