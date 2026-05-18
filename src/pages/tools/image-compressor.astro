@@ -1,0 +1,490 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import FileDropZone from '../../components/FileDropZone.astro';
+import { tools } from '../../data/tools';
+import type { FAQItem } from '../../components/FAQ.astro';
+
+const relatedSlugs = ['png-to-jpg', 'jpg-to-png', 'webp-converter'];
+const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
+
+const faqs: FAQItem[] = [
+  {
+    question: '圖片壓縮會破壞畫質嗎？',
+    answer:
+      'JPG 和 WebP 是有損壓縮，壓縮後畫質確實會略降，但在品質 75 以上，人眼通常看不出明顯差異。PNG 壓縮則是無損的，只縮小檔案大小，不影響畫質。',
+  },
+  {
+    question: '品質設多少最適合？',
+    answer:
+      '預設的 80 對大多數用途都很合適，網頁圖片、社群媒體發文等場合都足夠。如果是需要印刷或高細節呈現的圖片，可以拉到 90 以上。低於 60 才會開始出現明顯的色塊或模糊。',
+  },
+  {
+    question: '為什麼有時候壓縮後反而變大？',
+    answer:
+      '有些圖片本身已經是高度壓縮過的狀態，再壓一次反而可能讓工具為了保留品質而產生更大的檔案。這種情況下直接使用原始檔案就好，結果卡片也會標示「原檔已最佳化」讓你知道。',
+  },
+  {
+    question: '我的圖片會上傳到伺服器嗎？',
+    answer:
+      '完全不會。所有壓縮都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+  },
+  {
+    question: '為什麼這個工具是免費的？',
+    answer:
+      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，所以幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+  },
+];
+
+const howToSteps = [
+  '上傳圖片：支援 JPG、PNG、WebP 三種格式，可一次選擇多張批次處理。',
+  '調整壓縮設定：拖動品質滑桿（80 通常是品質與大小最佳平衡點），可選擇限制最大寬度進一步縮小檔案。',
+  '下載壓縮結果：單張下載或一鍵打包成 ZIP，所有處理都在您的瀏覽器完成。',
+];
+---
+
+<ToolLayout
+  title="圖片壓縮線上工具 - 免費批次壓縮 JPG/PNG/WebP"
+  description="100% 瀏覽器處理的圖片壓縮工具，支援 JPG、PNG、WebP 批次壓縮，可調品質與尺寸，檔案不上傳保護隱私。"
+  category="圖片工具"
+  faqs={faqs}
+  relatedTools={relatedTools}
+  howToSteps={howToSteps}
+  applicationCategory="UtilitiesApplication"
+  operatingSystem="Web Browser"
+>
+  <div class="space-y-6">
+    <!-- 壓縮設定區 -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
+      <h2 class="text-lg font-semibold text-gray-900">壓縮設定</h2>
+
+      <!-- 品質滑桿 -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="quality-slider" class="text-sm font-medium text-gray-700">壓縮品質</label>
+          <span id="quality-display" class="text-sm font-bold text-blue-600">80</span>
+        </div>
+        <input
+          id="quality-slider"
+          type="range"
+          min="1"
+          max="100"
+          value="80"
+          class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+        />
+        <div class="flex justify-between text-xs text-gray-400">
+          <span>1（最小）</span>
+          <span>100（最高品質）</span>
+        </div>
+      </div>
+
+      <!-- 最大寬度限制 -->
+      <div class="space-y-3">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input
+            id="max-width-toggle"
+            type="checkbox"
+            class="h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-pointer"
+          />
+          <span class="text-sm font-medium text-gray-700">限制最大寬度</span>
+        </label>
+        <div id="max-width-options" class="hidden flex flex-wrap gap-2 pl-6">
+          <button class="max-width-btn px-3 py-1.5 rounded-lg border-2 border-blue-500 bg-white text-sm font-medium text-gray-700 transition-all" data-width="1920">1920 px</button>
+          <button class="max-width-btn px-3 py-1.5 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium text-gray-700 transition-all" data-width="1280">1280 px</button>
+          <button class="max-width-btn px-3 py-1.5 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium text-gray-700 transition-all" data-width="800">800 px</button>
+          <div class="flex items-center gap-2">
+            <button id="custom-width-btn" class="max-width-btn px-3 py-1.5 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium text-gray-700 transition-all" data-width="custom">自訂</button>
+            <input
+              id="custom-width-input"
+              type="number"
+              min="100"
+              max="9999"
+              placeholder="px"
+              class="hidden w-20 text-sm border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 輸出格式 -->
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-gray-700">輸出格式</label>
+        <div class="flex flex-wrap gap-2">
+          <button class="format-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-sm font-medium transition-all" data-format="original">保持原格式</button>
+          <button class="format-btn px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all" data-format="image/jpeg">強制 JPG</button>
+          <button class="format-btn px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all" data-format="image/webp">強制 WebP</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 上傳區 -->
+    <FileDropZone
+      accept="image/jpeg,image/png,image/webp"
+      multiple={true}
+      maxSizeMB={50}
+      hint="拖放圖片到此處，或點擊選擇（JPG / PNG / WebP，最多 30 張）"
+      inputId="image-file-input"
+    />
+
+    <!-- 錯誤訊息 -->
+    <div id="error-banner" class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-3 text-sm">
+      <span class="text-lg shrink-0">⚠️</span>
+      <span id="error-text"></span>
+    </div>
+
+    <!-- 處理中進度 -->
+    <div id="progress-section" class="hidden space-y-2">
+      <div class="flex items-center justify-between text-sm text-gray-600">
+        <span>壓縮中...</span>
+        <span id="progress-text">0 / 0</span>
+      </div>
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div id="progress-bar" class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 結果區 -->
+    <div id="results-section" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">壓縮結果</h2>
+        <div class="flex gap-2">
+          <button
+            id="download-all-btn"
+            class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            <span>⬇️</span>
+            全部下載 ZIP
+          </button>
+          <button
+            id="clear-btn"
+            class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            <span>🗑️</span>
+            清除全部
+          </button>
+        </div>
+      </div>
+      <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<script>
+  import imageCompression from 'browser-image-compression';
+  import { zipSync } from 'fflate';
+
+  // ── 狀態 ─────────────────────────────────────────────────
+  let quality = 80;
+  let maxWidthEnabled = false;
+  let maxWidth = 1920;
+  let customWidthActive = false;
+  let outputFormat: string = 'original';
+
+  interface CompressedFile {
+    name: string;
+    outputName: string;
+    blob: Blob;
+    originalFile: File;
+    originalSize: number;
+    compressedSize: number;
+    thumbUrl: string;
+    enlarged: boolean;
+  }
+  const compressedFiles: CompressedFile[] = [];
+
+  // ── DOM refs ────────────────────────────────────────────
+  const qualitySlider = document.getElementById('quality-slider') as HTMLInputElement;
+  const qualityDisplay = document.getElementById('quality-display') as HTMLSpanElement;
+  const maxWidthToggle = document.getElementById('max-width-toggle') as HTMLInputElement;
+  const maxWidthOptions = document.getElementById('max-width-options') as HTMLDivElement;
+  const maxWidthBtns = document.querySelectorAll<HTMLButtonElement>('.max-width-btn');
+  const customWidthBtn = document.getElementById('custom-width-btn') as HTMLButtonElement;
+  const customWidthInput = document.getElementById('custom-width-input') as HTMLInputElement;
+  const formatBtns = document.querySelectorAll<HTMLButtonElement>('.format-btn');
+  const errorBanner = document.getElementById('error-banner') as HTMLDivElement;
+  const errorText = document.getElementById('error-text') as HTMLSpanElement;
+  const progressSection = document.getElementById('progress-section') as HTMLDivElement;
+  const progressBar = document.getElementById('progress-bar') as HTMLDivElement;
+  const progressText = document.getElementById('progress-text') as HTMLSpanElement;
+  const resultsSection = document.getElementById('results-section') as HTMLDivElement;
+  const resultsGrid = document.getElementById('results-grid') as HTMLDivElement;
+  const downloadAllBtn = document.getElementById('download-all-btn') as HTMLButtonElement;
+  const clearBtn = document.getElementById('clear-btn') as HTMLButtonElement;
+
+  // ── 品質滑桿 ────────────────────────────────────────────
+  qualitySlider.addEventListener('input', () => {
+    quality = Number(qualitySlider.value);
+    qualityDisplay.textContent = String(quality);
+  });
+
+  // ── 最大寬度切換 ────────────────────────────────────────
+  maxWidthToggle.addEventListener('change', () => {
+    maxWidthEnabled = maxWidthToggle.checked;
+    maxWidthOptions.classList.toggle('hidden', !maxWidthEnabled);
+  });
+
+  function selectMaxWidth(btn: HTMLButtonElement) {
+    maxWidthBtns.forEach((b) => {
+      b.classList.toggle('border-blue-500', b === btn);
+      b.classList.toggle('border-transparent', b !== btn);
+      b.classList.toggle('bg-gray-100', b !== btn);
+      b.classList.toggle('bg-white', b === btn);
+    });
+  }
+
+  maxWidthBtns.forEach((btn) => {
+    if (btn.id === 'custom-width-btn') return;
+    btn.addEventListener('click', () => {
+      customWidthActive = false;
+      maxWidth = Number(btn.dataset.width);
+      customWidthInput.classList.add('hidden');
+      selectMaxWidth(btn);
+    });
+  });
+
+  customWidthBtn.addEventListener('click', () => {
+    customWidthActive = true;
+    customWidthInput.classList.remove('hidden');
+    customWidthInput.focus();
+    selectMaxWidth(customWidthBtn);
+  });
+
+  customWidthInput.addEventListener('input', () => {
+    const v = Number(customWidthInput.value);
+    if (v >= 100 && v <= 9999) maxWidth = v;
+  });
+
+  // ── 輸出格式 ────────────────────────────────────────────
+  formatBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      outputFormat = btn.dataset.format!;
+      formatBtns.forEach((b) => {
+        b.classList.toggle('border-blue-500', b === btn);
+        b.classList.toggle('border-transparent', b !== btn);
+        b.classList.toggle('bg-gray-100', b !== btn);
+      });
+    });
+  });
+
+  // ── 錯誤顯示 ────────────────────────────────────────────
+  function showError(msg: string) {
+    errorText.textContent = msg;
+    errorBanner.classList.remove('hidden');
+    setTimeout(() => errorBanner.classList.add('hidden'), 5000);
+  }
+
+  // ── 格式化大小 ──────────────────────────────────────────
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  }
+
+  // ── 取得副檔名 ──────────────────────────────────────────
+  function getOutputName(file: File): string {
+    const base = file.name.replace(/\.[^.]+$/, '');
+    if (outputFormat === 'image/jpeg') return `${base}.jpg`;
+    if (outputFormat === 'image/webp') return `${base}.webp`;
+    return file.name;
+  }
+
+  function getMimeType(file: File): string {
+    if (outputFormat !== 'original') return outputFormat;
+    return file.type || 'image/jpeg';
+  }
+
+  // ── 結果卡片 ────────────────────────────────────────────
+  function addResultCard(item: CompressedFile) {
+    const ratio = (((item.originalSize - item.compressedSize) / item.originalSize) * 100).toFixed(1);
+    const saved = Number(ratio) > 0;
+
+    const card = document.createElement('div');
+    card.className = 'bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col';
+
+    const sizeRow = item.enlarged
+      ? `<div class="flex justify-between font-medium text-orange-500">
+           <span>原檔已最佳化</span>
+           <span>+${Math.abs(Number(ratio))}%</span>
+         </div>`
+      : `<div class="flex justify-between font-medium ${saved ? 'text-emerald-600' : 'text-orange-500'}">
+           <span>${saved ? '節省' : '增加'}</span>
+           <span>${saved ? '-' : '+'}${Math.abs(Number(ratio))}%</span>
+         </div>`;
+
+    card.innerHTML = `
+      <div class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+        <img src="${item.thumbUrl}" alt="${item.outputName}" class="max-h-full max-w-full object-contain" loading="lazy" />
+      </div>
+      <div class="p-4 flex flex-col gap-3 flex-1">
+        <p class="text-sm font-medium text-gray-900 truncate" title="${item.outputName}">${item.outputName}</p>
+        <div class="text-xs text-gray-500 space-y-1">
+          <div class="flex justify-between">
+            <span>原始大小</span>
+            <span>${formatSize(item.originalSize)}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>壓縮後</span>
+            <span>${formatSize(item.compressedSize)}</span>
+          </div>
+          ${sizeRow}
+        </div>
+        <button class="download-btn mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+          <span>⬇️</span> 下載
+        </button>
+      </div>
+    `;
+
+    const downloadBtn = card.querySelector<HTMLButtonElement>('.download-btn')!;
+    downloadBtn.addEventListener('click', () => {
+      const fileToDownload = item.enlarged ? item.originalFile : item.blob;
+      const nameToDownload = item.enlarged ? item.originalFile.name : item.outputName;
+      const url = URL.createObjectURL(fileToDownload);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nameToDownload;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    resultsGrid.appendChild(card);
+  }
+
+  // ── 主要處理邏輯 ─────────────────────────────────────────
+  async function processFiles(files: FileList | File[]) {
+    const fileArray = Array.from(files);
+    const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    const validFiles = fileArray.filter((f) => ACCEPTED_TYPES.includes(f.type));
+    const invalid = fileArray.filter((f) => !ACCEPTED_TYPES.includes(f.type));
+
+    if (invalid.length > 0) {
+      showError(`${invalid.length} 個檔案格式不支援，已略過：${invalid.map((f) => f.name).join('、')}`);
+    }
+
+    if (validFiles.length === 0) return;
+
+    if (validFiles.length > 30) {
+      showError(`一次最多壓縮 30 張，已略過後面 ${validFiles.length - 30} 張。`);
+      validFiles.splice(30);
+    }
+
+    const tooBig = validFiles.filter((f) => f.size > 50 * 1024 * 1024);
+    if (tooBig.length > 0) {
+      showError(`${tooBig.map((f) => f.name).join('、')} 超過 50 MB 上限，已略過。`);
+      validFiles.splice(0, validFiles.length, ...validFiles.filter((f) => f.size <= 50 * 1024 * 1024));
+    }
+
+    if (validFiles.length === 0) return;
+
+    compressedFiles.length = 0;
+    resultsGrid.innerHTML = '';
+    resultsSection.classList.remove('hidden');
+    downloadAllBtn.classList.add('hidden');
+    progressSection.classList.remove('hidden');
+
+    let done = 0;
+    progressText.textContent = `0 / ${validFiles.length}`;
+    progressBar.style.width = '0%';
+
+    for (const file of validFiles) {
+      try {
+        const mime = getMimeType(file);
+        const options: Parameters<typeof imageCompression>[1] = {
+          initialQuality: quality / 100,
+          fileType: mime,
+          useWebWorker: true,
+          ...(maxWidthEnabled ? { maxWidthOrHeight: maxWidth } : {}),
+        };
+
+        const compressed = await imageCompression(file, options);
+        const enlarged = compressed.size > file.size;
+        const finalBlob = enlarged ? file : compressed;
+
+        const thumbUrl = await new Promise<string>((res) => {
+          const reader = new FileReader();
+          reader.onload = (e) => res(e.target!.result as string);
+          reader.readAsDataURL(finalBlob);
+        });
+
+        const item: CompressedFile = {
+          name: file.name,
+          outputName: getOutputName(file),
+          blob: finalBlob,
+          originalFile: file,
+          originalSize: file.size,
+          compressedSize: compressed.size,
+          thumbUrl,
+          enlarged,
+        };
+        compressedFiles.push(item);
+        addResultCard(item);
+      } catch {
+        showError(`${file.name} 壓縮失敗，請確認檔案是否損壞。`);
+      }
+
+      done++;
+      const pct = Math.round((done / validFiles.length) * 100);
+      progressBar.style.width = `${pct}%`;
+      progressText.textContent = `${done} / ${validFiles.length}`;
+    }
+
+    progressSection.classList.add('hidden');
+
+    if (compressedFiles.length > 1) {
+      downloadAllBtn.classList.remove('hidden');
+    }
+  }
+
+  // ── 監聽 FileDropZone 事件 ─────────────────────────────
+  document.addEventListener('files-selected', (e: Event) => {
+    const files = (e as CustomEvent<FileList>).detail;
+    processFiles(files);
+  });
+
+  // ── 全部下載 ZIP ─────────────────────────────────────────
+  downloadAllBtn.addEventListener('click', async () => {
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.textContent = '打包中...';
+
+    try {
+      const fileMap: Record<string, Uint8Array> = {};
+      await Promise.all(
+        compressedFiles.map(async (item) => {
+          const fileToZip = item.enlarged ? item.originalFile : item.blob;
+          const name = item.enlarged ? item.originalFile.name : item.outputName;
+          const buf = await fileToZip.arrayBuffer();
+          fileMap[name] = new Uint8Array(buf);
+        })
+      );
+
+      const zipped = zipSync(fileMap, { level: 0 });
+      const zipBlob = new Blob([zipped], { type: 'application/zip' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'compressed-images.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      downloadAllBtn.disabled = false;
+      downloadAllBtn.innerHTML = '<span>⬇️</span> 全部下載 ZIP';
+    }
+  });
+
+  // ── 清除全部 ─────────────────────────────────────────────
+  clearBtn.addEventListener('click', () => {
+    compressedFiles.length = 0;
+    resultsGrid.innerHTML = '';
+    resultsSection.classList.add('hidden');
+    downloadAllBtn.classList.add('hidden');
+    progressSection.classList.add('hidden');
+    errorBanner.classList.add('hidden');
+
+    const fileInput = document.getElementById('image-file-input') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    const fileList = document.getElementById('file-list');
+    if (fileList) {
+      fileList.innerHTML = '';
+      fileList.classList.add('hidden');
+    }
+  });
+</script>
