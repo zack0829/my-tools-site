@@ -1,0 +1,587 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { tools } from '../../data/tools';
+import type { FAQItem } from '../../components/FAQ.astro';
+
+const relatedSlugs = ['image-compressor', 'png-to-jpg', 'jpg-to-png'];
+const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
+
+const faqs: FAQItem[] = [
+  {
+    question: 'WebP 是什麼格式？為什麼要用？',
+    answer:
+      'WebP 是 Google 開發的現代圖片格式，相同畫質下比 JPG 小約 25–35%，比透明 PNG 也小很多。網站使用 WebP 可以加速頁面載入、改善 SEO 分數，是目前最推薦的網頁圖片格式之一。',
+  },
+  {
+    question: 'WebP 所有瀏覽器都支援嗎？',
+    answer:
+      'Chrome、Firefox、Safari、Edge 等主流瀏覽器近幾年都已支援 WebP。如果你的圖片需要在較舊環境（如 IE 11 或舊版 iOS Safari）下使用，才需要考慮改用 JPG 或 PNG。',
+  },
+  {
+    question: '「其他轉 WebP」和「WebP 轉其他」差別在哪？',
+    answer:
+      '「其他轉 WebP」是把你的 JPG 或 PNG 轉成更小的 WebP，適合準備網站素材。「WebP 轉其他」是把 WebP 轉回 JPG 或 PNG，適合收到 WebP 但需要相容其他軟體時使用。',
+  },
+  {
+    question: '我的圖片會上傳到伺服器嗎？',
+    answer:
+      '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+  },
+  {
+    question: '為什麼這個工具是免費的？',
+    answer:
+      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+  },
+];
+
+const howToSteps = [
+  '選擇轉換方向：點選「其他轉 WebP」或「WebP 轉其他」分頁。',
+  '上傳圖片並設定：拖放圖片，調整品質或選擇輸出格式。',
+  '下載轉換結果：單張下載或一鍵打包成 ZIP。',
+];
+---
+
+<ToolLayout
+  title="WebP 轉換器 - 線上免費 WebP 轉 JPG/PNG 或反向轉換"
+  description="雙向 WebP 轉換工具，支援 JPG/PNG 轉 WebP 或 WebP 轉 JPG/PNG。100% 瀏覽器處理，檔案不上傳。"
+  category="圖片工具"
+  faqs={faqs}
+  relatedTools={relatedTools}
+  howToSteps={howToSteps}
+  applicationCategory="UtilitiesApplication"
+  operatingSystem="Web Browser"
+>
+  <div class="space-y-6">
+    <!-- 分頁切換 -->
+    <div class="flex rounded-xl border border-gray-200 bg-gray-100 p-1 gap-1">
+      <button
+        id="tab-to-webp"
+        class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all bg-white text-blue-700 shadow-sm"
+      >
+        其他轉 WebP
+      </button>
+      <button
+        id="tab-from-webp"
+        class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700"
+      >
+        WebP 轉其他
+      </button>
+    </div>
+
+    <!-- Tab 1: 其他轉 WebP -->
+    <div id="panel-to-webp" class="space-y-6">
+      <!-- 設定區 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
+        <h2 class="text-lg font-semibold text-gray-900">轉換設定</h2>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="quality-slider" class="text-sm font-medium text-gray-700">WebP 品質</label>
+            <span id="quality-display" class="text-sm font-bold text-blue-600">85</span>
+          </div>
+          <input
+            id="quality-slider"
+            type="range"
+            min="1"
+            max="100"
+            value="85"
+            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+          />
+          <div class="flex justify-between text-xs text-gray-400">
+            <span>1（最小）</span>
+            <span>100（最高品質）</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 上傳區：其他轉 WebP -->
+      <div
+        id="dropzone-to-webp"
+        class="relative flex flex-col items-center justify-center gap-4 w-full min-h-48 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer p-8 text-center"
+        role="button"
+        tabindex="0"
+        aria-label="檔案上傳區域"
+      >
+        <div class="flex flex-col items-center gap-2 pointer-events-none">
+          <span class="text-5xl">📂</span>
+          <p class="text-base font-medium text-blue-700">拖放 JPG 或 PNG 圖片到此處，或點擊選擇（最多 20 張）</p>
+          <p class="text-sm text-gray-500">支援 JPG、PNG，可選擇多個檔案</p>
+          <p class="text-xs text-gray-400">最大 50 MB</p>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
+          <span>🔒</span>
+          <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+        </div>
+        <input
+          id="input-to-webp"
+          type="file"
+          accept="image/jpeg,image/png"
+          multiple
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          aria-hidden="true"
+        />
+      </div>
+      <div id="filelist-to-webp" class="hidden space-y-2" aria-live="polite"></div>
+    </div>
+
+    <!-- Tab 2: WebP 轉其他 -->
+    <div id="panel-from-webp" class="hidden space-y-6">
+      <!-- 設定區 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
+        <h2 class="text-lg font-semibold text-gray-900">輸出格式</h2>
+        <div class="flex flex-wrap gap-2">
+          <button
+            class="output-fmt-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-sm font-medium transition-all"
+            data-format="image/jpeg"
+          >輸出 JPG</button>
+          <button
+            class="output-fmt-btn px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all"
+            data-format="image/png"
+          >輸出 PNG</button>
+        </div>
+      </div>
+
+      <!-- 上傳區：WebP 轉其他 -->
+      <div
+        id="dropzone-from-webp"
+        class="relative flex flex-col items-center justify-center gap-4 w-full min-h-48 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer p-8 text-center"
+        role="button"
+        tabindex="0"
+        aria-label="檔案上傳區域"
+      >
+        <div class="flex flex-col items-center gap-2 pointer-events-none">
+          <span class="text-5xl">📂</span>
+          <p class="text-base font-medium text-blue-700">拖放 WebP 圖片到此處，或點擊選擇（最多 20 張）</p>
+          <p class="text-sm text-gray-500">支援 WebP，可選擇多個檔案</p>
+          <p class="text-xs text-gray-400">最大 50 MB</p>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
+          <span>🔒</span>
+          <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+        </div>
+        <input
+          id="input-from-webp"
+          type="file"
+          accept="image/webp"
+          multiple
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          aria-hidden="true"
+        />
+      </div>
+      <div id="filelist-from-webp" class="hidden space-y-2" aria-live="polite"></div>
+    </div>
+
+    <!-- 錯誤訊息 -->
+    <div id="error-banner" class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-3 text-sm">
+      <span class="text-lg shrink-0">⚠️</span>
+      <span id="error-text"></span>
+    </div>
+
+    <!-- 處理中進度 -->
+    <div id="progress-section" class="hidden space-y-2">
+      <div class="flex items-center justify-between text-sm text-gray-600">
+        <span>轉換中...</span>
+        <span id="progress-text">0 / 0</span>
+      </div>
+      <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div id="progress-bar" class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- 結果區 -->
+    <div id="results-section" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900">轉換結果</h2>
+        <div class="flex gap-2">
+          <button
+            id="download-all-btn"
+            class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            <span>⬇️</span>
+            全部下載 ZIP
+          </button>
+          <button
+            id="clear-btn"
+            class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            <span>🗑️</span>
+            清除全部
+          </button>
+        </div>
+      </div>
+      <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+  </div>
+</ToolLayout>
+
+<script>
+  import { zipSync } from 'fflate';
+
+  // ── 狀態 ─────────────────────────────────────────────────
+  type Mode = 'to-webp' | 'from-webp';
+  let activeMode: Mode = 'to-webp';
+  let quality = 85;
+  let outputFormat: 'image/jpeg' | 'image/png' = 'image/jpeg';
+
+  interface ConvertedFile {
+    outputName: string;
+    blob: Blob;
+    originalFile: File;
+    originalSize: number;
+    convertedSize: number;
+    thumbUrl: string;
+    enlarged: boolean;
+  }
+  const convertedFiles: ConvertedFile[] = [];
+
+  // ── DOM refs ────────────────────────────────────────────
+  const tabToWebp = document.getElementById('tab-to-webp') as HTMLButtonElement;
+  const tabFromWebp = document.getElementById('tab-from-webp') as HTMLButtonElement;
+  const panelToWebp = document.getElementById('panel-to-webp') as HTMLDivElement;
+  const panelFromWebp = document.getElementById('panel-from-webp') as HTMLDivElement;
+  const qualitySlider = document.getElementById('quality-slider') as HTMLInputElement;
+  const qualityDisplay = document.getElementById('quality-display') as HTMLSpanElement;
+  const outputFmtBtns = document.querySelectorAll<HTMLButtonElement>('.output-fmt-btn');
+  const errorBanner = document.getElementById('error-banner') as HTMLDivElement;
+  const errorText = document.getElementById('error-text') as HTMLSpanElement;
+  const progressSection = document.getElementById('progress-section') as HTMLDivElement;
+  const progressBar = document.getElementById('progress-bar') as HTMLDivElement;
+  const progressText = document.getElementById('progress-text') as HTMLSpanElement;
+  const resultsSection = document.getElementById('results-section') as HTMLDivElement;
+  const resultsGrid = document.getElementById('results-grid') as HTMLDivElement;
+  const downloadAllBtn = document.getElementById('download-all-btn') as HTMLButtonElement;
+  const clearBtn = document.getElementById('clear-btn') as HTMLButtonElement;
+
+  const dropzoneToWebp = document.getElementById('dropzone-to-webp') as HTMLDivElement;
+  const inputToWebp = document.getElementById('input-to-webp') as HTMLInputElement;
+  const filelistToWebp = document.getElementById('filelist-to-webp') as HTMLDivElement;
+  const dropzoneFromWebp = document.getElementById('dropzone-from-webp') as HTMLDivElement;
+  const inputFromWebp = document.getElementById('input-from-webp') as HTMLInputElement;
+  const filelistFromWebp = document.getElementById('filelist-from-webp') as HTMLDivElement;
+
+  // ── 分頁切換 ─────────────────────────────────────────────
+  const TAB_ACTIVE = 'bg-white text-blue-700 shadow-sm';
+  const TAB_INACTIVE = 'text-gray-500 hover:text-gray-700';
+
+  function setTab(mode: Mode) {
+    activeMode = mode;
+    const toWebp = mode === 'to-webp';
+
+    tabToWebp.className = `flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${toWebp ? TAB_ACTIVE : TAB_INACTIVE}`;
+    tabFromWebp.className = `flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${!toWebp ? TAB_ACTIVE : TAB_INACTIVE}`;
+    panelToWebp.classList.toggle('hidden', !toWebp);
+    panelFromWebp.classList.toggle('hidden', toWebp);
+
+    clearResults();
+    resetDropzone(inputToWebp, filelistToWebp);
+    resetDropzone(inputFromWebp, filelistFromWebp);
+  }
+
+  function resetDropzone(input: HTMLInputElement, fileList: HTMLDivElement) {
+    input.value = '';
+    fileList.innerHTML = '';
+    fileList.classList.add('hidden');
+  }
+
+  function clearResults() {
+    convertedFiles.length = 0;
+    resultsGrid.innerHTML = '';
+    resultsSection.classList.add('hidden');
+    downloadAllBtn.classList.add('hidden');
+    progressSection.classList.add('hidden');
+    errorBanner.classList.add('hidden');
+  }
+
+  tabToWebp.addEventListener('click', () => setTab('to-webp'));
+  tabFromWebp.addEventListener('click', () => setTab('from-webp'));
+
+  // ── 品質滑桿 ────────────────────────────────────────────
+  qualitySlider.addEventListener('input', () => {
+    quality = Number(qualitySlider.value);
+    qualityDisplay.textContent = String(quality);
+  });
+
+  // ── 輸出格式 ────────────────────────────────────────────
+  outputFmtBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      outputFormat = btn.dataset.format as 'image/jpeg' | 'image/png';
+      outputFmtBtns.forEach((b) => {
+        b.classList.toggle('border-blue-500', b === btn);
+        b.classList.toggle('border-transparent', b !== btn);
+        b.classList.toggle('bg-gray-100', b !== btn);
+      });
+    });
+  });
+
+  // ── Drop Zone 通用邏輯 ───────────────────────────────────
+  function showFileList(files: FileList, fileListEl: HTMLDivElement) {
+    fileListEl.innerHTML = '';
+    fileListEl.classList.remove('hidden');
+    Array.from(files).forEach((file) => {
+      const item = document.createElement('div');
+      item.className = 'flex items-center gap-3 bg-white rounded-lg border border-gray-200 px-4 py-2 text-sm';
+      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+      item.innerHTML = `
+        <span class="text-lg">📄</span>
+        <span class="flex-1 truncate font-medium text-gray-800">${file.name}</span>
+        <span class="text-gray-400 shrink-0">${sizeMB} MB</span>
+      `;
+      fileListEl.appendChild(item);
+    });
+  }
+
+  function setupDropzone(dropzone: HTMLDivElement, input: HTMLInputElement, fileList: HTMLDivElement) {
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('bg-blue-100', 'border-blue-500');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('bg-blue-100', 'border-blue-500');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('bg-blue-100', 'border-blue-500');
+      if (e.dataTransfer?.files) {
+        showFileList(e.dataTransfer.files, fileList);
+        processFiles(e.dataTransfer.files);
+      }
+    });
+    dropzone.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        input.click();
+      }
+    });
+    input.addEventListener('change', () => {
+      if (input.files) {
+        showFileList(input.files, fileList);
+        processFiles(input.files);
+      }
+    });
+  }
+
+  setupDropzone(dropzoneToWebp, inputToWebp, filelistToWebp);
+  setupDropzone(dropzoneFromWebp, inputFromWebp, filelistFromWebp);
+
+  // ── 錯誤顯示 ────────────────────────────────────────────
+  function showError(msg: string) {
+    errorText.textContent = msg;
+    errorBanner.classList.remove('hidden');
+    setTimeout(() => errorBanner.classList.add('hidden'), 5000);
+  }
+
+  // ── 格式化大小 ──────────────────────────────────────────
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  }
+
+  // ── 取得輸出檔名 ─────────────────────────────────────────
+  function getOutputName(file: File, toMime: string): string {
+    const base = file.name.replace(/\.[^.]+$/, '');
+    if (toMime === 'image/webp') return `${base}.webp`;
+    if (toMime === 'image/jpeg') return `${base}.jpg`;
+    return `${base}.png`;
+  }
+
+  // ── Canvas 轉換 ─────────────────────────────────────────
+  function convertImage(file: File, toMime: string, q?: number): Promise<{ blob: Blob; thumbUrl: string }> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('讀取檔案失敗'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('圖片載入失敗'));
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d')!;
+          if (toMime === 'image/jpeg') {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) return reject(new Error('轉換失敗'));
+              resolve({ blob, thumbUrl: canvas.toDataURL(toMime, 0.5) });
+            },
+            toMime,
+            q
+          );
+        };
+        img.src = e.target!.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── 結果卡片 ────────────────────────────────────────────
+  function addResultCard(item: ConvertedFile) {
+    const ratio = (((item.originalSize - item.convertedSize) / item.originalSize) * 100).toFixed(1);
+    const saved = Number(ratio) > 0;
+
+    const sizeRow = item.enlarged
+      ? `<div class="flex justify-between font-medium text-orange-500">
+           <span>原檔已最佳化</span>
+           <span>+${Math.abs(Number(ratio))}%</span>
+         </div>`
+      : `<div class="flex justify-between font-medium ${saved ? 'text-emerald-600' : 'text-orange-500'}">
+           <span>${saved ? '節省' : '增加'}</span>
+           <span>${saved ? '-' : '+'}${Math.abs(Number(ratio))}%</span>
+         </div>`;
+
+    const card = document.createElement('div');
+    card.className = 'bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col';
+    card.innerHTML = `
+      <div class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+        <img src="${item.thumbUrl}" alt="${item.outputName}" class="max-h-full max-w-full object-contain" loading="lazy" />
+      </div>
+      <div class="p-4 flex flex-col gap-3 flex-1">
+        <p class="text-sm font-medium text-gray-900 truncate" title="${item.outputName}">${item.outputName}</p>
+        <div class="text-xs text-gray-500 space-y-1">
+          <div class="flex justify-between">
+            <span>原始大小</span>
+            <span>${formatSize(item.originalSize)}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>轉換後</span>
+            <span>${formatSize(item.convertedSize)}</span>
+          </div>
+          ${sizeRow}
+        </div>
+        <button class="download-btn mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+          <span>⬇️</span> 下載
+        </button>
+      </div>
+    `;
+
+    const downloadBtn = card.querySelector<HTMLButtonElement>('.download-btn')!;
+    downloadBtn.addEventListener('click', () => {
+      const fileToDownload = item.enlarged ? item.originalFile : item.blob;
+      const nameToDownload = item.enlarged ? item.originalFile.name : item.outputName;
+      const url = URL.createObjectURL(fileToDownload);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nameToDownload;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    resultsGrid.appendChild(card);
+  }
+
+  // ── 主要處理邏輯 ─────────────────────────────────────────
+  async function processFiles(files: FileList | File[]) {
+    const fileArray = Array.from(files);
+    const ACCEPTED: Record<Mode, string[]> = {
+      'to-webp': ['image/jpeg', 'image/png'],
+      'from-webp': ['image/webp'],
+    };
+    const accepted = ACCEPTED[activeMode];
+
+    const valid = fileArray.filter((f) => accepted.includes(f.type));
+    const invalid = fileArray.filter((f) => !accepted.includes(f.type));
+
+    if (invalid.length > 0) {
+      showError(`${invalid.length} 個檔案格式不支援，已略過：${invalid.map((f) => f.name).join('、')}`);
+    }
+    if (valid.length === 0) return;
+
+    if (valid.length > 20) {
+      showError(`一次最多轉換 20 張，已略過後面 ${valid.length - 20} 張。`);
+      valid.splice(20);
+    }
+
+    const tooBig = valid.filter((f) => f.size > 50 * 1024 * 1024);
+    if (tooBig.length > 0) {
+      showError(`${tooBig.map((f) => f.name).join('、')} 超過 50 MB 上限，已略過。`);
+      valid.splice(0, valid.length, ...valid.filter((f) => f.size <= 50 * 1024 * 1024));
+    }
+    if (valid.length === 0) return;
+
+    convertedFiles.length = 0;
+    resultsGrid.innerHTML = '';
+    resultsSection.classList.remove('hidden');
+    downloadAllBtn.classList.add('hidden');
+    progressSection.classList.remove('hidden');
+
+    let done = 0;
+    progressText.textContent = `0 / ${valid.length}`;
+    progressBar.style.width = '0%';
+
+    for (const file of valid) {
+      try {
+        const toMime = activeMode === 'to-webp' ? 'image/webp' : outputFormat;
+        // PNG 是無損格式，不傳品質參數
+        const q = toMime === 'image/png' ? undefined : quality / 100;
+        const { blob, thumbUrl } = await convertImage(file, toMime, q);
+        // PNG 輸出檔案通常比 WebP 大，屬正常行為，不標記 enlarged
+        const enlarged = toMime !== 'image/png' && blob.size > file.size;
+
+        const item: ConvertedFile = {
+          outputName: getOutputName(file, toMime),
+          blob,
+          originalFile: file,
+          originalSize: file.size,
+          convertedSize: blob.size,
+          thumbUrl,
+          enlarged,
+        };
+        convertedFiles.push(item);
+        addResultCard(item);
+      } catch {
+        showError(`${file.name} 轉換失敗，請確認檔案是否損壞。`);
+      }
+
+      done++;
+      const pct = Math.round((done / valid.length) * 100);
+      progressBar.style.width = `${pct}%`;
+      progressText.textContent = `${done} / ${valid.length}`;
+    }
+
+    progressSection.classList.add('hidden');
+
+    if (convertedFiles.length > 1) {
+      downloadAllBtn.classList.remove('hidden');
+    }
+  }
+
+  // ── 全部下載 ZIP ─────────────────────────────────────────
+  downloadAllBtn.addEventListener('click', async () => {
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.textContent = '打包中...';
+
+    try {
+      const fileMap: Record<string, Uint8Array> = {};
+      await Promise.all(
+        convertedFiles.map(async (item) => {
+          const fileToZip = item.enlarged ? item.originalFile : item.blob;
+          const name = item.enlarged ? item.originalFile.name : item.outputName;
+          const buf = await fileToZip.arrayBuffer();
+          fileMap[name] = new Uint8Array(buf);
+        })
+      );
+
+      const zipped = zipSync(fileMap, { level: 0 });
+      const zipBlob = new Blob([zipped], { type: 'application/zip' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'webp-converted.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      downloadAllBtn.disabled = false;
+      downloadAllBtn.innerHTML = '<span>⬇️</span> 全部下載 ZIP';
+    }
+  });
+
+  // ── 清除全部 ─────────────────────────────────────────────
+  clearBtn.addEventListener('click', () => {
+    clearResults();
+    resetDropzone(inputToWebp, filelistToWebp);
+    resetDropzone(inputFromWebp, filelistFromWebp);
+  });
+</script>
