@@ -1,0 +1,892 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { tools } from '../../data/tools';
+import type { FAQItem } from '../../components/FAQ.astro';
+
+const relatedSlugs = ['pdf-merge', 'png-to-jpg', 'image-compressor'];
+const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
+
+const faqs: FAQItem[] = [
+  {
+    question: '我的 PDF 會上傳到伺服器嗎？',
+    answer:
+      '完全不會。所有處理都在你的瀏覽器裡完成，PDF 檔案從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+  },
+  {
+    question: '自訂頁面範圍要怎麼輸入？',
+    answer:
+      '輸入頁碼和範圍，用逗號分隔。例如 "1-3,5,7-9" 會產生三個 PDF：第 1–3 頁、第 5 頁、第 7–9 頁。頁碼從 1 開始計算。',
+  },
+  {
+    question: '「分割成單頁」會輸出幾個檔案？',
+    answer:
+      '幾頁就輸出幾個 PDF，每個檔案只包含一頁。如果你的 PDF 有 10 頁，就會產生 10 個單頁 PDF，並自動打包成 ZIP 下載。',
+  },
+  {
+    question: '為什麼最大限制 100 MB？',
+    answer:
+      '瀏覽器記憶體有限，100 MB 的 PDF 在處理時實際佔用記憶體可能是原始大小的數倍。超過這個大小可能導致瀏覽器無回應，因此設定此上限以保護你的使用體驗。',
+  },
+  {
+    question: '為什麼這個工具是免費的？',
+    answer:
+      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+  },
+  {
+    question: '為什麼要選擇開啟縮圖預覽？',
+    answer:
+      '純文字模式載入快、適合任何大小的 PDF；縮圖預覽能直接看到每頁內容，方便選擇要保留或刪除的頁面，但大型 PDF（如 100 頁以上）載入較慢。請依需求選擇。',
+  },
+];
+
+const howToSteps = [
+  '上傳 PDF：拖放或點擊上傳一個 PDF 檔案。',
+  '選擇分割模式：分割為單頁、自訂範圍（如 1-3,5）或勾選要保留的頁面。',
+  '下載分割結果：單檔下載或一鍵打包成 ZIP。',
+];
+---
+
+<ToolLayout
+  title="PDF 分割線上工具 - 免費分頁、抽取 PDF 頁面"
+  description="100% 瀏覽器處理的 PDF 分割工具，可逐頁分割、自訂頁面範圍或抽取特定頁面，檔案不上傳保護隱私。"
+  category="PDF 工具"
+  faqs={faqs}
+  relatedTools={relatedTools}
+  howToSteps={howToSteps}
+  applicationCategory="UtilitiesApplication"
+  operatingSystem="Web Browser"
+>
+  <!-- 確認對話框 -->
+  <div id="confirm-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 space-y-4">
+      <h3 class="text-base font-semibold text-gray-900">確認開啟縮圖預覽</h3>
+      <p id="confirm-msg" class="text-sm text-gray-600"></p>
+      <div class="flex gap-3 justify-end">
+        <button id="confirm-cancel" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors">
+          取消
+        </button>
+        <button id="confirm-ok" class="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          繼續開啟
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <!-- 上傳區 -->
+    <div id="upload-section">
+      <div
+        id="dropzone"
+        class="relative flex flex-col items-center justify-center gap-4 w-full min-h-48 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer p-8 text-center"
+        role="button"
+        tabindex="0"
+        aria-label="PDF 上傳區域"
+      >
+        <div class="flex flex-col items-center gap-2 pointer-events-none">
+          <span class="text-5xl">📄</span>
+          <p class="text-base font-medium text-blue-700">拖放 PDF 到此處，或點擊選擇（單一 PDF，最大 100 MB）</p>
+          <p class="text-sm text-gray-500">只接受一個 PDF 檔案</p>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
+          <span>🔒</span>
+          <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+        </div>
+        <input
+          id="pdf-file-input"
+          type="file"
+          accept="application/pdf"
+          class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          aria-hidden="true"
+        />
+      </div>
+    </div>
+
+    <!-- 錯誤訊息 -->
+    <div id="error-banner" class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-3 text-sm">
+      <span class="text-lg shrink-0">⚠️</span>
+      <span id="error-text"></span>
+    </div>
+
+    <!-- 主要操作區 -->
+    <div id="main-section" class="hidden space-y-6">
+      <!-- 檔案資訊 + 重新選擇 -->
+      <div class="flex items-center justify-between bg-white rounded-2xl border border-gray-200 px-5 py-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">📄</span>
+          <div>
+            <p id="file-name" class="text-sm font-semibold text-gray-900 truncate max-w-xs"></p>
+            <p id="file-info" class="text-xs text-gray-400"></p>
+          </div>
+        </div>
+        <button
+          id="reselect-btn"
+          class="text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          重新選擇
+        </button>
+      </div>
+
+      <!-- 縮圖預覽開關 -->
+      <div id="preview-toggle-row" class="flex flex-wrap items-center gap-3 bg-white rounded-2xl border border-gray-200 px-5 py-3">
+        <label class="flex items-center gap-3 cursor-pointer select-none">
+          <div class="relative shrink-0">
+            <input type="checkbox" id="preview-toggle" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-checked:after:border-white"></div>
+          </div>
+          <span class="text-sm font-medium text-gray-700">顯示頁面縮圖預覽</span>
+        </label>
+        <span class="text-xs text-gray-400">開啟後可看到每頁內容，大型 PDF 載入較慢</span>
+      </div>
+
+      <!-- 分割模式分頁 -->
+      <div>
+        <div class="flex rounded-xl border border-gray-200 bg-gray-100 p-1 gap-1">
+          <button id="tab-single" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all bg-white text-blue-700 shadow-sm">
+            分割成單頁
+          </button>
+          <button id="tab-range" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700">
+            自訂頁面範圍
+          </button>
+          <button id="tab-pick" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700">
+            取出特定頁面
+          </button>
+        </div>
+
+        <!-- 縮圖網格（共用，懶載入） -->
+        <div id="thumb-grid-container" class="hidden mt-4">
+          <div id="thumb-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
+        </div>
+
+        <!-- 模式 A：分割成單頁 -->
+        <div id="panel-single" class="mt-4 space-y-4">
+          <p id="single-desc" class="text-sm text-gray-600">將每一頁單獨存成一個 PDF，全部打包成 ZIP 下載。</p>
+          <p id="single-preview-info" class="hidden text-sm text-blue-700 font-medium"></p>
+          <button
+            id="split-single-btn"
+            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors"
+          >
+            <span>✂️</span>
+            開始分割
+          </button>
+        </div>
+
+        <!-- 模式 B：自訂頁面範圍 -->
+        <div id="panel-range" class="hidden mt-4 space-y-4">
+          <div class="space-y-2">
+            <label for="range-input" class="text-sm font-medium text-gray-700">
+              輸入頁面範圍
+              <span class="ml-2 font-normal text-gray-400">用逗號分隔，例如：1-3,5,7-9</span>
+            </label>
+            <input
+              id="range-input"
+              type="text"
+              placeholder="例如：1-3,5,7-9"
+              class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <p class="text-xs text-gray-400">每個範圍產生一個獨立的 PDF 檔案</p>
+          </div>
+          <button
+            id="split-range-btn"
+            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors"
+          >
+            <span>✂️</span>
+            開始分割
+          </button>
+        </div>
+
+        <!-- 模式 C：取出特定頁面 -->
+        <div id="panel-pick" class="hidden mt-4 space-y-4">
+          <div class="flex items-center justify-between">
+            <p id="pick-desc" class="text-sm text-gray-600">勾選要保留的頁面，合併輸出為一個 PDF。</p>
+            <div class="flex gap-2">
+              <button id="check-all-btn" class="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors">全選</button>
+              <button id="uncheck-all-btn" class="text-xs text-gray-500 hover:text-gray-700 font-medium px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors">全不選</button>
+            </div>
+          </div>
+          <!-- 文字 checkbox 格子（預覽關閉時顯示） -->
+          <div id="page-checkboxes" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2"></div>
+          <button
+            id="split-pick-btn"
+            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors"
+          >
+            <span>✂️</span>
+            取出所選頁面
+          </button>
+        </div>
+      </div>
+
+      <!-- 處理中 -->
+      <div id="progress-section" class="hidden">
+        <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4">
+          <div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+          <div>
+            <p class="text-sm font-medium text-blue-700">分割中，請稍候...</p>
+            <p class="text-xs text-blue-500">大型 PDF 可能需要 5–10 秒</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 結果區 -->
+      <div id="result-section" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-900">分割結果</h2>
+          <button
+            id="download-zip-btn"
+            class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            <span>⬇️</span>
+            全部下載 ZIP
+          </button>
+        </div>
+        <div id="single-download" class="hidden">
+          <button
+            id="download-single-btn"
+            class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors"
+          >
+            <span>⬇️</span>
+            下載 PDF
+          </button>
+        </div>
+        <ul id="result-list" class="space-y-2"></ul>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+
+<script>
+  import { PDFDocument } from 'pdf-lib';
+  import { zipSync } from 'fflate';
+  import * as pdfjsLib from 'pdfjs-dist';
+  import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+  // ── 狀態 ─────────────────────────────────────────────────
+  type SplitMode = 'single' | 'range' | 'pick';
+  let activeMode: SplitMode = 'single';
+  let currentFile: File | null = null;
+  let totalPages = 0;
+  let previewEnabled = false;
+  let pdfJsDoc: Awaited<ReturnType<typeof pdfjsLib.getDocument>>['promise'] | null = null;
+  const thumbCache = new Map<number, string>(); // page → data URL
+  let thumbObserver: IntersectionObserver | null = null;
+
+  interface ResultPdf { name: string; blob: Blob; }
+  let resultPdfs: ResultPdf[] = [];
+  let singleResultBlob: Blob | null = null;
+
+  // ── DOM refs ────────────────────────────────────────────
+  const dropzone = document.getElementById('dropzone') as HTMLDivElement;
+  const fileInput = document.getElementById('pdf-file-input') as HTMLInputElement;
+  const uploadSection = document.getElementById('upload-section') as HTMLDivElement;
+  const mainSection = document.getElementById('main-section') as HTMLDivElement;
+  const errorBanner = document.getElementById('error-banner') as HTMLDivElement;
+  const errorText = document.getElementById('error-text') as HTMLSpanElement;
+  const fileNameEl = document.getElementById('file-name') as HTMLParagraphElement;
+  const fileInfoEl = document.getElementById('file-info') as HTMLParagraphElement;
+  const reselectBtn = document.getElementById('reselect-btn') as HTMLButtonElement;
+
+  const tabSingle = document.getElementById('tab-single') as HTMLButtonElement;
+  const tabRange = document.getElementById('tab-range') as HTMLButtonElement;
+  const tabPick = document.getElementById('tab-pick') as HTMLButtonElement;
+  const panelSingle = document.getElementById('panel-single') as HTMLDivElement;
+  const panelRange = document.getElementById('panel-range') as HTMLDivElement;
+  const panelPick = document.getElementById('panel-pick') as HTMLDivElement;
+
+  const thumbGridContainer = document.getElementById('thumb-grid-container') as HTMLDivElement;
+  const thumbGrid = document.getElementById('thumb-grid') as HTMLDivElement;
+  const previewToggle = document.getElementById('preview-toggle') as HTMLInputElement;
+
+  const singleDesc = document.getElementById('single-desc') as HTMLParagraphElement;
+  const singlePreviewInfo = document.getElementById('single-preview-info') as HTMLParagraphElement;
+  const pickDesc = document.getElementById('pick-desc') as HTMLParagraphElement;
+
+  const splitSingleBtn = document.getElementById('split-single-btn') as HTMLButtonElement;
+  const rangeInput = document.getElementById('range-input') as HTMLInputElement;
+  const splitRangeBtn = document.getElementById('split-range-btn') as HTMLButtonElement;
+  const pageCheckboxes = document.getElementById('page-checkboxes') as HTMLDivElement;
+  const checkAllBtn = document.getElementById('check-all-btn') as HTMLButtonElement;
+  const uncheckAllBtn = document.getElementById('uncheck-all-btn') as HTMLButtonElement;
+  const splitPickBtn = document.getElementById('split-pick-btn') as HTMLButtonElement;
+
+  const progressSection = document.getElementById('progress-section') as HTMLDivElement;
+  const resultSection = document.getElementById('result-section') as HTMLDivElement;
+  const downloadZipBtn = document.getElementById('download-zip-btn') as HTMLButtonElement;
+  const singleDownloadDiv = document.getElementById('single-download') as HTMLDivElement;
+  const downloadSingleBtn = document.getElementById('download-single-btn') as HTMLButtonElement;
+  const resultList = document.getElementById('result-list') as HTMLUListElement;
+
+  const confirmModal = document.getElementById('confirm-modal') as HTMLDivElement;
+  const confirmMsg = document.getElementById('confirm-msg') as HTMLParagraphElement;
+  const confirmOkBtn = document.getElementById('confirm-ok') as HTMLButtonElement;
+  const confirmCancelBtn = document.getElementById('confirm-cancel') as HTMLButtonElement;
+
+  // ── 工具函式 ─────────────────────────────────────────────
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  }
+
+  function showError(msg: string) {
+    errorText.textContent = msg;
+    errorBanner.classList.remove('hidden');
+    setTimeout(() => errorBanner.classList.add('hidden'), 6000);
+  }
+
+  // ── 確認對話框 ──────────────────────────────────────────
+  function showConfirm(msg: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      confirmMsg.textContent = msg;
+      confirmModal.classList.remove('hidden');
+      const onOk = () => { cleanup(); resolve(true); };
+      const onCancel = () => { cleanup(); resolve(false); };
+      confirmOkBtn.addEventListener('click', onOk, { once: true });
+      confirmCancelBtn.addEventListener('click', onCancel, { once: true });
+      function cleanup() { confirmModal.classList.add('hidden'); }
+    });
+  }
+
+  async function enablePreview(): Promise<boolean> {
+    const estSecs = Math.max(1, Math.round(totalPages * 0.15));
+    if (totalPages >= 200) {
+      return showConfirm(
+        `此 PDF 有 ${totalPages} 頁，產生所有縮圖預估需要 ${estSecs} 秒。頁數較多，強烈建議使用文字模式。是否仍要繼續？`
+      );
+    }
+    if (totalPages >= 50) {
+      return showConfirm(
+        `此 PDF 有 ${totalPages} 頁，產生縮圖預估需要 ${estSecs} 秒，是否繼續？`
+      );
+    }
+    return true;
+  }
+
+  // ── 分頁切換 ─────────────────────────────────────────────
+  const TAB_ACTIVE = 'bg-white text-blue-700 shadow-sm';
+  const TAB_INACTIVE = 'text-gray-500 hover:text-gray-700';
+
+  function setTab(mode: SplitMode) {
+    activeMode = mode;
+    tabSingle.className = `flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'single' ? TAB_ACTIVE : TAB_INACTIVE}`;
+    tabRange.className  = `flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'range'  ? TAB_ACTIVE : TAB_INACTIVE}`;
+    tabPick.className   = `flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${mode === 'pick'   ? TAB_ACTIVE : TAB_INACTIVE}`;
+    panelSingle.classList.toggle('hidden', mode !== 'single');
+    panelRange.classList.toggle('hidden', mode !== 'range');
+    panelPick.classList.toggle('hidden', mode !== 'pick');
+    clearResults();
+    if (previewEnabled) updateThumbMode();
+  }
+
+  tabSingle.addEventListener('click', () => setTab('single'));
+  tabRange.addEventListener('click', () => setTab('range'));
+  tabPick.addEventListener('click', () => setTab('pick'));
+
+  // ── 清除結果 ─────────────────────────────────────────────
+  function clearResults() {
+    resultPdfs = [];
+    singleResultBlob = null;
+    resultSection.classList.add('hidden');
+    resultList.innerHTML = '';
+    downloadZipBtn.classList.add('hidden');
+    singleDownloadDiv.classList.add('hidden');
+    progressSection.classList.add('hidden');
+    errorBanner.classList.add('hidden');
+  }
+
+  // ── 建立文字 checkbox 格子（模式 C，預覽關閉） ──────────
+  function buildPageCheckboxes(total: number) {
+    pageCheckboxes.innerHTML = '';
+    for (let i = 1; i <= total; i++) {
+      const label = document.createElement('label');
+      label.className =
+        'flex flex-col items-center gap-1 bg-white border border-gray-200 rounded-lg p-2 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50';
+      label.innerHTML = `
+        <input type="checkbox" value="${i}" class="page-checkbox w-4 h-4 accent-blue-600 cursor-pointer" />
+        <span class="text-xs text-gray-600 font-medium">${i}</span>
+      `;
+      pageCheckboxes.appendChild(label);
+    }
+  }
+
+  checkAllBtn.addEventListener('click', () => {
+    pageCheckboxes.querySelectorAll<HTMLInputElement>('.page-checkbox').forEach((cb) => { cb.checked = true; });
+    if (previewEnabled && activeMode === 'pick') updateThumbPickState();
+  });
+  uncheckAllBtn.addEventListener('click', () => {
+    pageCheckboxes.querySelectorAll<HTMLInputElement>('.page-checkbox').forEach((cb) => { cb.checked = false; });
+    if (previewEnabled && activeMode === 'pick') updateThumbPickState();
+  });
+
+  // ── PDF.js：載入文件 ─────────────────────────────────────
+  async function loadPdfJs(file: File): Promise<void> {
+    const buf = await file.arrayBuffer();
+    pdfJsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise as any;
+  }
+
+  // ── PDF.js：渲染單頁縮圖 → data URL ─────────────────────
+  async function renderThumb(pageNum: number): Promise<string> {
+    if (thumbCache.has(pageNum)) return thumbCache.get(pageNum)!;
+    const page = await (pdfJsDoc as any).getPage(pageNum);
+    const rawViewport = page.getViewport({ scale: 1 });
+    const scale = 150 / rawViewport.width;
+    const vp = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(vp.width);
+    canvas.height = Math.round(vp.height);
+    await page.render({ canvasContext: canvas.getContext('2d')!, viewport: vp }).promise;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    thumbCache.set(pageNum, dataUrl);
+    return dataUrl;
+  }
+
+  // ── 建立縮圖網格 ─────────────────────────────────────────
+  function buildThumbGrid(total: number) {
+    if (thumbObserver) { thumbObserver.disconnect(); thumbObserver = null; }
+    thumbGrid.innerHTML = '';
+
+    for (let i = 1; i <= total; i++) {
+      const card = document.createElement('div');
+      card.className = [
+        'thumb-card relative flex flex-col items-center rounded-xl border-2 border-transparent',
+        'bg-white overflow-hidden cursor-pointer select-none',
+        'hover:shadow-md transition-all duration-150',
+      ].join(' ');
+      card.dataset.page = String(i);
+
+      card.innerHTML = `
+        <div class="thumb-skeleton w-[150px] flex items-center justify-center bg-gray-100" style="height:200px">
+          <div class="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin"></div>
+        </div>
+        <img class="thumb-img hidden w-[150px] object-contain" alt="第 ${i} 頁" loading="lazy" />
+        <div class="thumb-check-overlay hidden absolute top-2 left-2 w-6 h-6 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center"></div>
+        <p class="text-xs text-gray-500 font-medium py-1.5">第 ${i} 頁</p>
+      `;
+
+      card.addEventListener('click', () => handleThumbClick(i));
+      thumbGrid.appendChild(card);
+    }
+
+    setupLazyLoad();
+  }
+
+  function setupLazyLoad() {
+    thumbObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(async (entry) => {
+          if (!entry.isIntersecting) return;
+          const card = entry.target as HTMLElement;
+          const pageNum = parseInt(card.dataset.page!);
+          thumbObserver!.unobserve(card);
+
+          try {
+            const dataUrl = await renderThumb(pageNum);
+            const skeleton = card.querySelector<HTMLElement>('.thumb-skeleton')!;
+            const img = card.querySelector<HTMLImageElement>('.thumb-img')!;
+            img.src = dataUrl;
+            skeleton.classList.add('hidden');
+            img.classList.remove('hidden');
+          } catch {
+            // leave skeleton on render error
+          }
+        });
+      },
+      { rootMargin: '300px' }
+    );
+
+    thumbGrid.querySelectorAll<HTMLElement>('.thumb-card').forEach((card) => {
+      thumbObserver!.observe(card);
+    });
+  }
+
+  // ── 縮圖點擊 ────────────────────────────────────────────
+  function handleThumbClick(pageNum: number) {
+    if (activeMode === 'pick') {
+      const cb = pageCheckboxes.querySelector<HTMLInputElement>(`.page-checkbox[value="${pageNum}"]`);
+      if (cb) {
+        cb.checked = !cb.checked;
+        updateThumbPickState();
+      }
+    }
+  }
+
+  // ── 更新模式 C 的勾選視覺狀態 ─────────────────────────
+  function updateThumbPickState() {
+    thumbGrid.querySelectorAll<HTMLElement>('.thumb-card').forEach((card) => {
+      const pageNum = parseInt(card.dataset.page!);
+      const cb = pageCheckboxes.querySelector<HTMLInputElement>(`.page-checkbox[value="${pageNum}"]`);
+      const overlay = card.querySelector<HTMLElement>('.thumb-check-overlay')!;
+      const checked = cb?.checked ?? false;
+
+      if (checked) {
+        card.classList.add('border-blue-500');
+        card.classList.remove('border-transparent');
+        overlay.className = 'thumb-check-overlay absolute top-2 left-2 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center';
+        overlay.innerHTML = `<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>`;
+      } else {
+        card.classList.remove('border-blue-500');
+        card.classList.add('border-transparent');
+        overlay.className = 'thumb-check-overlay absolute top-2 left-2 w-6 h-6 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center';
+        overlay.innerHTML = '';
+      }
+    });
+  }
+
+  // ── 更新模式 B 的 highlight ──────────────────────────────
+  function updateThumbRangeHighlight(rangeStr: string) {
+    const ranges = parseRanges(rangeStr, totalPages);
+    const highlighted = new Set<number>();
+    if (ranges) ranges.forEach((pages) => pages.forEach((p) => highlighted.add(p)));
+
+    thumbGrid.querySelectorAll<HTMLElement>('.thumb-card').forEach((card) => {
+      const pageNum = parseInt(card.dataset.page!);
+      if (highlighted.has(pageNum)) {
+        card.classList.add('border-blue-500');
+        card.classList.remove('border-transparent');
+      } else {
+        card.classList.remove('border-blue-500');
+        card.classList.add('border-transparent');
+      }
+    });
+  }
+
+  // ── 更新縮圖互動模式 ─────────────────────────────────────
+  function updateThumbMode() {
+    const isPick = activeMode === 'pick';
+    const isRange = activeMode === 'range';
+
+    thumbGrid.querySelectorAll<HTMLElement>('.thumb-check-overlay').forEach((el) => {
+      el.classList.toggle('hidden', !isPick);
+    });
+
+    // 重設所有 border
+    if (!isPick && !isRange) {
+      thumbGrid.querySelectorAll<HTMLElement>('.thumb-card').forEach((card) => {
+        card.classList.remove('border-blue-500');
+        card.classList.add('border-transparent');
+      });
+    }
+
+    if (isPick) updateThumbPickState();
+    if (isRange) updateThumbRangeHighlight(rangeInput.value);
+
+    // 更新說明文字
+    if (activeMode === 'single') {
+      singleDesc.classList.add('hidden');
+      singlePreviewInfo.textContent = `共 ${totalPages} 頁，分割後將產生 ${totalPages} 個 PDF，打包為 ZIP 下載。`;
+      singlePreviewInfo.classList.remove('hidden');
+    } else {
+      singleDesc.classList.remove('hidden');
+      singlePreviewInfo.classList.add('hidden');
+    }
+
+    pickDesc.classList.toggle('hidden', isPick);
+    pageCheckboxes.classList.toggle('hidden', isPick);
+  }
+
+  function showThumbGrid() {
+    thumbGridContainer.classList.remove('hidden');
+    updateThumbMode();
+  }
+
+  function hideThumbGrid() {
+    thumbGridContainer.classList.add('hidden');
+    // 恢復文字模式顯示
+    singleDesc.classList.remove('hidden');
+    singlePreviewInfo.classList.add('hidden');
+    pickDesc.classList.remove('hidden');
+    pageCheckboxes.classList.remove('hidden');
+  }
+
+  // ── 預覽開關 ─────────────────────────────────────────────
+  previewToggle.addEventListener('change', async () => {
+    if (previewToggle.checked) {
+      const proceed = await enablePreview();
+      if (!proceed) {
+        previewToggle.checked = false;
+        return;
+      }
+      previewEnabled = true;
+
+      if (!pdfJsDoc && currentFile) {
+        try {
+          await loadPdfJs(currentFile);
+        } catch {
+          showError('縮圖載入失敗，請重試。');
+          previewToggle.checked = false;
+          previewEnabled = false;
+          return;
+        }
+      }
+
+      buildThumbGrid(totalPages);
+      showThumbGrid();
+    } else {
+      previewEnabled = false;
+      hideThumbGrid();
+    }
+  });
+
+  // 模式 B：range input 即時 highlight
+  rangeInput.addEventListener('input', () => {
+    if (previewEnabled && activeMode === 'range') {
+      updateThumbRangeHighlight(rangeInput.value);
+    }
+  });
+
+  // ── 載入 PDF ─────────────────────────────────────────────
+  async function loadFile(file: File) {
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      showError('請選擇 PDF 檔案。');
+      return;
+    }
+    if (file.size > 100 * 1024 * 1024) {
+      showError(`「${file.name}」超過 100 MB 上限。`);
+      return;
+    }
+
+    try {
+      const buf = await file.arrayBuffer();
+      const doc = await PDFDocument.load(buf, { ignoreEncryption: false });
+      totalPages = doc.getPageCount();
+    } catch {
+      showError(`「${file.name}」無法讀取，可能已加密或損壞。`);
+      return;
+    }
+
+    // 重置縮圖狀態
+    pdfJsDoc = null;
+    thumbCache.clear();
+    if (thumbObserver) { thumbObserver.disconnect(); thumbObserver = null; }
+    previewEnabled = false;
+    previewToggle.checked = false;
+    thumbGrid.innerHTML = '';
+    thumbGridContainer.classList.add('hidden');
+
+    currentFile = file;
+    fileNameEl.textContent = file.name;
+    fileInfoEl.textContent = `${totalPages} 頁・${formatSize(file.size)}`;
+    buildPageCheckboxes(totalPages);
+    clearResults();
+
+    uploadSection.classList.add('hidden');
+    mainSection.classList.remove('hidden');
+  }
+
+  // ── Dropzone 事件 ────────────────────────────────────────
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('bg-blue-100', 'border-blue-500');
+  });
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('bg-blue-100', 'border-blue-500');
+  });
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('bg-blue-100', 'border-blue-500');
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) loadFile(files[0]);
+  });
+  dropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files?.[0]) loadFile(fileInput.files[0]);
+    fileInput.value = '';
+  });
+
+  // ── 重新選擇 ─────────────────────────────────────────────
+  reselectBtn.addEventListener('click', () => {
+    currentFile = null;
+    totalPages = 0;
+    pdfJsDoc = null;
+    thumbCache.clear();
+    if (thumbObserver) { thumbObserver.disconnect(); thumbObserver = null; }
+    previewEnabled = false;
+    previewToggle.checked = false;
+    thumbGrid.innerHTML = '';
+    thumbGridContainer.classList.add('hidden');
+    clearResults();
+    mainSection.classList.add('hidden');
+    uploadSection.classList.remove('hidden');
+    setTab('single');
+    rangeInput.value = '';
+    hideThumbGrid();
+  });
+
+  // ── 渲染結果列表（模式 A、B） ────────────────────────────
+  function renderResultList(pdfs: ResultPdf[]) {
+    resultList.innerHTML = '';
+    pdfs.forEach((item) => {
+      const li = document.createElement('li');
+      li.className = 'flex items-center gap-3 bg-white rounded-xl border border-gray-200 px-4 py-3 text-sm';
+      li.innerHTML = `
+        <span class="text-lg shrink-0">📄</span>
+        <div class="flex-1 min-w-0">
+          <p class="font-medium text-gray-900 truncate">${item.name}</p>
+          <p class="text-xs text-gray-400">${formatSize(item.blob.size)}</p>
+        </div>
+        <button class="dl-btn shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+          <span>⬇️</span> 下載
+        </button>
+      `;
+      li.querySelector<HTMLButtonElement>('.dl-btn')!.addEventListener('click', () => {
+        const url = URL.createObjectURL(item.blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = item.name; a.click();
+        URL.revokeObjectURL(url);
+      });
+      resultList.appendChild(li);
+    });
+  }
+
+  // ── 解析範圍字串 ─────────────────────────────────────────
+  function parseRanges(input: string, max: number): number[][] | null {
+    const parts = input.split(',').map((s) => s.trim()).filter(Boolean);
+    if (parts.length === 0) return null;
+    const ranges: number[][] = [];
+    for (const part of parts) {
+      const m = part.match(/^(\d+)(?:-(\d+))?$/);
+      if (!m) return null;
+      const start = parseInt(m[1], 10);
+      const end = m[2] ? parseInt(m[2], 10) : start;
+      if (start < 1 || end > max || start > end) return null;
+      const pages: number[] = [];
+      for (let p = start; p <= end; p++) pages.push(p);
+      ranges.push(pages);
+    }
+    return ranges;
+  }
+
+  // ── 從原始 PDF 擷取頁面 ──────────────────────────────────
+  async function extractPages(pageNumbers: number[], outputName: string): Promise<ResultPdf> {
+    const buf = await currentFile!.arrayBuffer();
+    const srcDoc = await PDFDocument.load(buf);
+    const newDoc = await PDFDocument.create();
+    const copied = await newDoc.copyPages(srcDoc, pageNumbers.map((p) => p - 1));
+    copied.forEach((p) => newDoc.addPage(p));
+    const bytes = await newDoc.save();
+    return { name: outputName, blob: new Blob([bytes], { type: 'application/pdf' }) };
+  }
+
+  // ── ZIP 下載 ─────────────────────────────────────────────
+  async function downloadAsZip(pdfs: ResultPdf[], zipName: string) {
+    downloadZipBtn.disabled = true;
+    downloadZipBtn.textContent = '打包中...';
+    try {
+      const fileMap: Record<string, Uint8Array> = {};
+      await Promise.all(pdfs.map(async (item) => {
+        const buf = await item.blob.arrayBuffer();
+        fileMap[item.name] = new Uint8Array(buf);
+      }));
+      const zipped = zipSync(fileMap, { level: 0 });
+      const zipBlob = new Blob([zipped], { type: 'application/zip' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url; a.download = zipName; a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      downloadZipBtn.disabled = false;
+      downloadZipBtn.innerHTML = '<span>⬇️</span> 全部下載 ZIP';
+    }
+  }
+
+  // ── 模式 A：分割成單頁 ───────────────────────────────────
+  splitSingleBtn.addEventListener('click', async () => {
+    if (!currentFile) return;
+    splitSingleBtn.disabled = true;
+    clearResults();
+    progressSection.classList.remove('hidden');
+    try {
+      const base = currentFile.name.replace(/\.pdf$/i, '');
+      const pdfs: ResultPdf[] = [];
+      for (let p = 1; p <= totalPages; p++) {
+        pdfs.push(await extractPages([p], `${base}_p${String(p).padStart(3, '0')}.pdf`));
+      }
+      resultPdfs = pdfs;
+      renderResultList(pdfs);
+      resultSection.classList.remove('hidden');
+      downloadZipBtn.classList.remove('hidden');
+    } catch {
+      showError('分割失敗，請確認 PDF 是否損壞或加密。');
+    } finally {
+      splitSingleBtn.disabled = false;
+      progressSection.classList.add('hidden');
+    }
+  });
+
+  downloadZipBtn.addEventListener('click', () => {
+    if (resultPdfs.length === 0) return;
+    downloadAsZip(resultPdfs, `${currentFile!.name.replace(/\.pdf$/i, '')}-split.zip`);
+  });
+
+  // ── 模式 B：自訂頁面範圍 ────────────────────────────────
+  splitRangeBtn.addEventListener('click', async () => {
+    if (!currentFile) return;
+    const rawInput = rangeInput.value.trim();
+    if (!rawInput) { showError('請輸入頁面範圍，例如：1-3,5,7-9'); return; }
+    const ranges = parseRanges(rawInput, totalPages);
+    if (!ranges) { showError(`範圍格式有誤，或頁碼超出範圍（共 ${totalPages} 頁）。`); return; }
+
+    splitRangeBtn.disabled = true;
+    clearResults();
+    progressSection.classList.remove('hidden');
+    try {
+      const base = currentFile.name.replace(/\.pdf$/i, '');
+      const pdfs: ResultPdf[] = [];
+      for (let i = 0; i < ranges.length; i++) {
+        const pages = ranges[i];
+        const label = pages.length === 1 ? `p${pages[0]}` : `p${pages[0]}-p${pages[pages.length - 1]}`;
+        pdfs.push(await extractPages(pages, `${base}_${label}.pdf`));
+      }
+      resultPdfs = pdfs;
+      renderResultList(pdfs);
+      resultSection.classList.remove('hidden');
+      downloadZipBtn.classList.toggle('hidden', pdfs.length <= 1);
+    } catch {
+      showError('分割失敗，請確認 PDF 是否損壞或加密。');
+    } finally {
+      splitRangeBtn.disabled = false;
+      progressSection.classList.add('hidden');
+    }
+  });
+
+  // ── 模式 C：取出特定頁面 ────────────────────────────────
+  splitPickBtn.addEventListener('click', async () => {
+    if (!currentFile) return;
+    const checked = Array.from(
+      pageCheckboxes.querySelectorAll<HTMLInputElement>('.page-checkbox:checked')
+    ).map((cb) => parseInt(cb.value, 10));
+    if (checked.length === 0) { showError('請至少勾選一個頁面。'); return; }
+    checked.sort((a, b) => a - b);
+
+    splitPickBtn.disabled = true;
+    clearResults();
+    progressSection.classList.remove('hidden');
+    try {
+      const base = currentFile.name.replace(/\.pdf$/i, '');
+      const item = await extractPages(checked, `${base}_picked.pdf`);
+      singleResultBlob = item.blob;
+      singleDownloadDiv.classList.remove('hidden');
+      resultList.classList.add('hidden');
+      downloadZipBtn.classList.add('hidden');
+      resultSection.classList.remove('hidden');
+    } catch {
+      showError('分割失敗，請確認 PDF 是否損壞或加密。');
+    } finally {
+      splitPickBtn.disabled = false;
+      progressSection.classList.add('hidden');
+    }
+  });
+
+  downloadSingleBtn.addEventListener('click', () => {
+    if (!singleResultBlob || !currentFile) return;
+    const base = currentFile.name.replace(/\.pdf$/i, '');
+    const url = URL.createObjectURL(singleResultBlob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${base}_picked.pdf`; a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>
