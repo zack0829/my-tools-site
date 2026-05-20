@@ -1,0 +1,412 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { tools } from '../../data/tools';
+import type { FAQItem } from '../../components/FAQ.astro';
+
+const relatedSlugs = ['json-formatter', 'qr-code-generator', 'image-compressor'];
+const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
+
+const faqs: FAQItem[] = [
+  {
+    question: '什麼是 Base64？什麼時候會用到？',
+    answer:
+      'Base64 是一種把二進位資料轉成純文字字元的編碼方式。常見用途包括：在 HTML/CSS 裡內嵌圖片（data URL）、傳送電子郵件附件、或在 JSON 裡傳遞二進位內容。只要你遇到需要把「任意資料」放進「只接受文字」的地方，Base64 就是標準作法。',
+  },
+  {
+    question: 'URL Safe 變體是什麼？什麼情況要用？',
+    answer:
+      '標準 Base64 含有 +、/ 和結尾的 = 字元，這些在 URL 裡有特殊意義，直接放進網址會出問題。URL Safe 變體把 + 換成 -、/ 換成 _、並移除 =，這樣的字串可以安全地放在網址或 Query String 裡。',
+  },
+  {
+    question: '我的資料會被上傳嗎？',
+    answer:
+      '完全不會。所有編解碼都在你的瀏覽器裡完成，你的文字或檔案從來不會離開你的裝置。就算斷網，這個工具也能正常運作。',
+  },
+  {
+    question: '編碼後的字串為什麼比原始檔案大？',
+    answer:
+      'Base64 把每 3 個位元組轉成 4 個字元，因此編碼後的大小約是原始資料的 1.33 倍（多了約 33%）。這是 Base64 的本質，是用「可讀性和相容性」換來的代價，不是工具的問題。',
+  },
+  {
+    question: '為什麼這個工具是免費的？',
+    answer:
+      '因為所有運算都在你的瀏覽器裡發生，伺服器幾乎不需要做任何處理，所以我們的成本接近零。工具本身就是這樣能免費提供的原因，不需要登入或付費。',
+  },
+];
+
+const howToSteps = [
+  '選擇模式：點選「文字轉 Base64」或「檔案轉 Base64」分頁。',
+  '輸入內容：貼上文字、拖放檔案，工具會即時處理。',
+  '複製結果：使用「複製結果」按鈕將 Base64 字串複製到剪貼簿。',
+];
+---
+
+<ToolLayout
+  title="Base64 編解碼線上工具 - 文字與檔案編碼免費轉換"
+  description="免費 Base64 編解碼工具，支援文字與檔案編碼，可選 URL Safe 變體。100% 瀏覽器處理，您的資料絕不上傳。"
+  category="開發者工具"
+  faqs={faqs}
+  relatedTools={relatedTools}
+  howToSteps={howToSteps}
+  applicationCategory="DeveloperApplication"
+  operatingSystem="Web Browser"
+>
+  <div class="space-y-4">
+
+    <!-- 分頁切換 -->
+    <div class="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <button id="tab-text" class="tab-btn px-5 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-gray-900 shadow-sm">
+        文字轉 Base64
+      </button>
+      <button id="tab-file" class="tab-btn px-5 py-2 rounded-lg text-sm font-medium transition-colors text-gray-500 hover:text-gray-700">
+        檔案轉 Base64
+      </button>
+    </div>
+
+    <!-- ── 分頁 A：文字 ─────────────────────────────── -->
+    <div id="panel-text" class="space-y-4">
+
+      <!-- 選項列 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-wrap items-center gap-3">
+        <label class="flex items-center gap-2 cursor-pointer select-none text-sm text-gray-700">
+          <input id="url-safe" type="checkbox" class="w-4 h-4 rounded accent-blue-600" />
+          URL Safe 變體（- _ 無 padding）
+        </label>
+        <div class="ml-auto flex gap-2">
+          <button id="btn-copy-text" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            複製結果
+          </button>
+          <button id="btn-swap" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            互換
+          </button>
+          <button id="btn-clear-text" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            清除
+          </button>
+        </div>
+      </div>
+
+      <!-- 雙欄 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <!-- 左：輸入 -->
+        <div class="space-y-1">
+          <label for="text-input" class="text-sm font-medium text-gray-700">原始文字</label>
+          <textarea
+            id="text-input"
+            spellcheck="false"
+            placeholder="在此輸入要編碼的文字"
+            class="w-full h-64 p-4 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none resize-y text-sm text-gray-800 placeholder-gray-400 transition-colors"
+            style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;"
+          ></textarea>
+        </div>
+
+        <!-- 中：按鈕 -->
+        <div class="hidden md:flex flex-col items-center justify-center gap-3 absolute left-1/2 -translate-x-1/2 mt-8">
+        </div>
+
+        <!-- 右：輸出 -->
+        <div class="space-y-1">
+          <label for="text-output" class="text-sm font-medium text-gray-700">Base64 結果</label>
+          <textarea
+            id="text-output"
+            readonly
+            spellcheck="false"
+            placeholder="編碼 / 解碼結果會顯示在這裡"
+            class="w-full h-64 p-4 rounded-xl border border-gray-200 bg-gray-50 resize-y text-sm text-gray-800 placeholder-gray-400 outline-none"
+            style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- 編碼 / 解碼按鈕列 -->
+      <div class="flex gap-3 justify-center">
+        <button id="btn-encode" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors">
+          編碼 →
+        </button>
+        <button id="btn-decode" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-6 py-2.5 rounded-lg transition-colors">
+          ← 解碼
+        </button>
+      </div>
+
+      <!-- 錯誤訊息 -->
+      <div id="text-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2"></div>
+    </div>
+
+    <!-- ── 分頁 B：檔案 ─────────────────────────────── -->
+    <div id="panel-file" class="hidden space-y-4">
+
+      <!-- 輸出選項 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-4 flex flex-wrap items-center gap-4">
+        <span class="text-sm font-medium text-gray-700">輸出格式：</span>
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+          <input type="radio" name="file-output" value="base64" checked class="accent-blue-600" />
+          純 Base64 字串
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+          <input type="radio" name="file-output" value="dataurl" class="accent-blue-600" />
+          完整 Data URL
+        </label>
+      </div>
+
+      <!-- 拖放區 -->
+      <div
+        id="file-drop-zone"
+        class="relative flex flex-col items-center justify-center gap-4 w-full min-h-48 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer p-8 text-center"
+        role="button"
+        tabindex="0"
+        aria-label="檔案上傳區域"
+      >
+        <div class="flex flex-col items-center gap-2 pointer-events-none">
+          <span class="text-5xl">📂</span>
+          <p class="text-base font-medium text-blue-700">拖放任何檔案到此處，或點擊選擇</p>
+          <p class="text-sm text-gray-500">支援所有檔案類型</p>
+          <p class="text-xs text-gray-400">最大 10 MB</p>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
+          <span>🔒</span>
+          <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+        </div>
+        <input id="file-input" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-hidden="true" />
+      </div>
+
+      <!-- 檔案資訊 -->
+      <div id="file-info" class="hidden flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700">
+        <span class="text-xl">📄</span>
+        <span id="file-name" class="flex-1 truncate font-medium"></span>
+        <span id="file-size" class="text-gray-400 shrink-0"></span>
+      </div>
+
+      <!-- 結果 -->
+      <div id="file-result-section" class="hidden space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="file-output-area" class="text-sm font-medium text-gray-700">Base64 結果</label>
+          <div class="flex gap-2">
+            <button id="btn-copy-file" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+              複製結果
+            </button>
+            <button id="btn-download-txt" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+              下載 .txt
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="file-output-area"
+          readonly
+          spellcheck="false"
+          class="w-full h-48 p-4 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-800 outline-none resize-y"
+          style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;"
+        ></textarea>
+      </div>
+
+      <!-- 錯誤訊息 -->
+      <div id="file-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2"></div>
+    </div>
+
+  </div>
+</ToolLayout>
+
+<script>
+  // ── 分頁切換 ───────────────────────────────────────────────
+  const tabText = document.getElementById('tab-text') as HTMLButtonElement;
+  const tabFile = document.getElementById('tab-file') as HTMLButtonElement;
+  const panelText = document.getElementById('panel-text') as HTMLDivElement;
+  const panelFile = document.getElementById('panel-file') as HTMLDivElement;
+
+  function switchTab(active: 'text' | 'file') {
+    const isText = active === 'text';
+    tabText.className = `tab-btn px-5 py-2 rounded-lg text-sm font-medium transition-colors ${isText ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`;
+    tabFile.className = `tab-btn px-5 py-2 rounded-lg text-sm font-medium transition-colors ${!isText ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`;
+    panelText.classList.toggle('hidden', !isText);
+    panelFile.classList.toggle('hidden', isText);
+  }
+
+  tabText.addEventListener('click', () => switchTab('text'));
+  tabFile.addEventListener('click', () => switchTab('file'));
+
+  // ── 文字編解碼 ─────────────────────────────────────────────
+  const textInput = document.getElementById('text-input') as HTMLTextAreaElement;
+  const textOutput = document.getElementById('text-output') as HTMLTextAreaElement;
+  const urlSafeCheck = document.getElementById('url-safe') as HTMLInputElement;
+  const textError = document.getElementById('text-error') as HTMLDivElement;
+  const btnEncode = document.getElementById('btn-encode') as HTMLButtonElement;
+  const btnDecode = document.getElementById('btn-decode') as HTMLButtonElement;
+  const btnCopyText = document.getElementById('btn-copy-text') as HTMLButtonElement;
+  const btnSwap = document.getElementById('btn-swap') as HTMLButtonElement;
+  const btnClearText = document.getElementById('btn-clear-text') as HTMLButtonElement;
+
+  function toUrlSafe(str: string): string {
+    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  function fromUrlSafe(str: string): string {
+    let s = str.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = s.length % 4;
+    if (pad === 2) s += '==';
+    else if (pad === 3) s += '=';
+    return s;
+  }
+
+  function encodeText() {
+    const text = textInput.value;
+    if (!text) { textOutput.value = ''; return; }
+    try {
+      const bytes = new TextEncoder().encode(text);
+      let binary = '';
+      bytes.forEach((b) => (binary += String.fromCharCode(b)));
+      let result = btoa(binary);
+      if (urlSafeCheck.checked) result = toUrlSafe(result);
+      textOutput.value = result;
+      textError.classList.add('hidden');
+    } catch {
+      textError.textContent = '編碼失敗，請確認輸入內容。';
+      textError.classList.remove('hidden');
+    }
+  }
+
+  function decodeText() {
+    const text = textInput.value.trim();
+    if (!text) { textOutput.value = ''; return; }
+    try {
+      const normalized = urlSafeCheck.checked ? fromUrlSafe(text) : text;
+      const binary = atob(normalized);
+      const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      textOutput.value = new TextDecoder().decode(bytes);
+      textError.classList.add('hidden');
+    } catch {
+      textError.textContent = '解碼失敗，請確認輸入的是有效的 Base64 字串。';
+      textError.classList.remove('hidden');
+    }
+  }
+
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  textInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(encodeText, 200);
+  });
+  urlSafeCheck.addEventListener('change', () => {
+    if (textInput.value) encodeText();
+  });
+
+  btnEncode.addEventListener('click', encodeText);
+  btnDecode.addEventListener('click', decodeText);
+
+  btnSwap.addEventListener('click', () => {
+    const tmp = textInput.value;
+    textInput.value = textOutput.value;
+    textOutput.value = tmp;
+    textError.classList.add('hidden');
+  });
+
+  btnCopyText.addEventListener('click', async () => {
+    if (!textOutput.value) return;
+    await navigator.clipboard.writeText(textOutput.value);
+    const orig = btnCopyText.textContent!;
+    btnCopyText.textContent = '已複製 ✓';
+    setTimeout(() => (btnCopyText.textContent = orig), 2000);
+  });
+
+  btnClearText.addEventListener('click', () => {
+    textInput.value = '';
+    textOutput.value = '';
+    textError.classList.add('hidden');
+  });
+
+  // ── 檔案轉 Base64 ─────────────────────────────────────────
+  const fileDropZone = document.getElementById('file-drop-zone') as HTMLDivElement;
+  const fileInputEl = document.getElementById('file-input') as HTMLInputElement;
+  const fileInfo = document.getElementById('file-info') as HTMLDivElement;
+  const fileNameEl = document.getElementById('file-name') as HTMLSpanElement;
+  const fileSizeEl = document.getElementById('file-size') as HTMLSpanElement;
+  const fileResultSection = document.getElementById('file-result-section') as HTMLDivElement;
+  const fileOutputArea = document.getElementById('file-output-area') as HTMLTextAreaElement;
+  const fileError = document.getElementById('file-error') as HTMLDivElement;
+  const btnCopyFile = document.getElementById('btn-copy-file') as HTMLButtonElement;
+  const btnDownloadTxt = document.getElementById('btn-download-txt') as HTMLButtonElement;
+
+  let currentFileName = '';
+
+  function formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  }
+
+  function getOutputFormat(): 'base64' | 'dataurl' {
+    return (document.querySelector('input[name="file-output"]:checked') as HTMLInputElement)?.value as 'base64' | 'dataurl' ?? 'base64';
+  }
+
+  function processFile(file: File) {
+    if (file.size > 10 * 1024 * 1024) {
+      fileError.textContent = '檔案超過 10 MB 上限，請選擇較小的檔案。';
+      fileError.classList.remove('hidden');
+      return;
+    }
+    fileError.classList.add('hidden');
+    currentFileName = file.name;
+    fileNameEl.textContent = file.name;
+    fileSizeEl.textContent = formatSize(file.size);
+    fileInfo.classList.remove('hidden');
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target!.result as string;
+      const fmt = getOutputFormat();
+      fileOutputArea.value = fmt === 'dataurl' ? dataUrl : dataUrl.split(',')[1];
+      fileResultSection.classList.remove('hidden');
+    };
+    reader.onerror = () => {
+      fileError.textContent = '讀取檔案失敗，請重試。';
+      fileError.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileDropZone.classList.add('bg-blue-100', 'border-blue-500');
+  });
+  fileDropZone.addEventListener('dragleave', () => {
+    fileDropZone.classList.remove('bg-blue-100', 'border-blue-500');
+  });
+  fileDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileDropZone.classList.remove('bg-blue-100', 'border-blue-500');
+    const file = e.dataTransfer?.files[0];
+    if (file) processFile(file);
+  });
+  fileDropZone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputEl.click(); }
+  });
+  fileInputEl.addEventListener('change', () => {
+    const file = fileInputEl.files?.[0];
+    if (file) processFile(file);
+  });
+
+  // 切換輸出格式時重新輸出
+  document.querySelectorAll('input[name="file-output"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      if (fileOutputArea.value) {
+        const file = fileInputEl.files?.[0];
+        if (file) processFile(file);
+      }
+    });
+  });
+
+  btnCopyFile.addEventListener('click', async () => {
+    if (!fileOutputArea.value) return;
+    await navigator.clipboard.writeText(fileOutputArea.value);
+    const orig = btnCopyFile.textContent!;
+    btnCopyFile.textContent = '已複製 ✓';
+    setTimeout(() => (btnCopyFile.textContent = orig), 2000);
+  });
+
+  btnDownloadTxt.addEventListener('click', () => {
+    if (!fileOutputArea.value) return;
+    const blob = new Blob([fileOutputArea.value], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentFileName || 'file'}.base64.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+</script>

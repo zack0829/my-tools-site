@@ -1,0 +1,545 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { tools } from '../../data/tools';
+import type { FAQItem } from '../../components/FAQ.astro';
+
+const relatedSlugs = ['base64', 'json-formatter', 'image-compressor'];
+const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
+
+const faqs: FAQItem[] = [
+  {
+    question: '容錯等級要選哪一個？',
+    answer:
+      '一般用途選 M（15%）就夠了，掃描穩定又不會讓 QR Code 太複雜。如果 QR Code 會印在可能磨損、髒污的地方（例如貼紙、名片），建議選 H（30%）。如果要追求最小、最乾淨的圖案，選 L（7%）即可。',
+  },
+  {
+    question: 'PNG 和 SVG 差別是什麼？',
+    answer:
+      'PNG 是點陣圖，放大到一定程度就會模糊，適合直接貼在網頁或文件裡。SVG 是向量圖，可以無限放大不失真，適合印刷或需要超大尺寸的場合。如果不確定，下載 SVG 是更安全的選擇。',
+  },
+  {
+    question: 'WiFi QR Code 怎麼用？',
+    answer:
+      '選「WiFi」分頁，填入無線網路名稱（SSID）、密碼和加密方式，工具會產生符合標準格式的 QR Code。讓訪客用手機相機掃描，就能直接連線，不需要手動輸入密碼。',
+  },
+  {
+    question: 'QR Code 有使用次數或時效限制嗎？',
+    answer:
+      '完全沒有。這個工具產生的 QR Code 不經過任何伺服器，QR Code 本身就是內容的直接編碼，只要內容不變，可以永久掃描使用，也沒有次數限制。',
+  },
+  {
+    question: '我的資料會被上傳嗎？',
+    answer:
+      '不會。所有 QR Code 都在你的瀏覽器裡即時產生，填入的網址、WiFi 密碼或聯絡資料完全不會離開你的裝置，也不會儲存在任何地方。',
+  },
+];
+
+const howToSteps = [
+  '選擇內容類型：依需求點選網址、WiFi、電子郵件等格式分頁。',
+  '填寫資料與樣式：輸入內容並調整顏色、大小、容錯等級。',
+  '下載 QR Code：選擇 PNG 或 SVG 格式下載，或複製到剪貼簿使用。',
+];
+---
+
+<ToolLayout
+  title="QR Code 產生器 - 免費線上製作 QR Code，支援 WiFi、名片、網址"
+  description="免費 QR Code 產生器，支援網址、WiFi、電子郵件、電話、vCard 等格式，可自訂顏色與大小。100% 瀏覽器處理。"
+  category="實用工具"
+  faqs={faqs}
+  relatedTools={relatedTools}
+  howToSteps={howToSteps}
+  applicationCategory="UtilitiesApplication"
+  operatingSystem="Web Browser"
+>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- ── 左側：設定面板 ───────────────────────────── -->
+    <div class="space-y-4">
+
+      <!-- 內容類型分頁 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+        <h2 class="text-base font-semibold text-gray-900">內容類型</h2>
+        <div class="flex flex-wrap gap-1.5" id="type-tabs">
+          {[
+            { id: 'text', label: '純文字' },
+            { id: 'url', label: '網址' },
+            { id: 'wifi', label: 'WiFi' },
+            { id: 'email', label: '電子郵件' },
+            { id: 'phone', label: '電話' },
+            { id: 'sms', label: '簡訊' },
+            { id: 'vcard', label: 'vCard 名片' },
+          ].map(({ id, label }) => (
+            <button
+              class="type-tab-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border"
+              data-type={id}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <!-- 各類型表單 -->
+        <div id="form-text" class="type-form space-y-3">
+          <label class="block text-sm font-medium text-gray-700">文字內容
+            <textarea id="input-text" rows="3" placeholder="輸入任意文字" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none resize-none transition-colors"></textarea>
+          </label>
+        </div>
+
+        <div id="form-url" class="type-form hidden space-y-3">
+          <label class="block text-sm font-medium text-gray-700">網址
+            <input id="input-url" type="url" placeholder="https://example.com" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+        </div>
+
+        <div id="form-wifi" class="type-form hidden space-y-3">
+          <label class="block text-sm font-medium text-gray-700">網路名稱（SSID）
+            <input id="wifi-ssid" type="text" placeholder="MyWiFiNetwork" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">密碼
+            <input id="wifi-pass" type="text" placeholder="WiFi 密碼（無密碼請留空）" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+          <div class="space-y-1">
+            <span class="text-sm font-medium text-gray-700">加密方式</span>
+            <div class="flex gap-4">
+              {['WPA', 'WEP', '無'].map((enc) => (
+                <label class="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer">
+                  <input type="radio" name="wifi-enc" value={enc} class="accent-blue-600" checked={enc === 'WPA'} />
+                  {enc}
+                </label>
+              ))}
+            </div>
+          </div>
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input id="wifi-hidden" type="checkbox" class="accent-blue-600" />
+            隱藏網路（Hidden）
+          </label>
+        </div>
+
+        <div id="form-email" class="type-form hidden space-y-3">
+          <label class="block text-sm font-medium text-gray-700">收件人 Email
+            <input id="email-to" type="email" placeholder="someone@example.com" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">主旨（選填）
+            <input id="email-subject" type="text" placeholder="郵件主旨" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">內容（選填）
+            <textarea id="email-body" rows="2" placeholder="郵件內容" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none resize-none transition-colors"></textarea>
+          </label>
+        </div>
+
+        <div id="form-phone" class="type-form hidden space-y-3">
+          <label class="block text-sm font-medium text-gray-700">電話號碼
+            <input id="input-phone" type="tel" placeholder="+886912345678" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+        </div>
+
+        <div id="form-sms" class="type-form hidden space-y-3">
+          <label class="block text-sm font-medium text-gray-700">電話號碼
+            <input id="sms-phone" type="tel" placeholder="+886912345678" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">訊息內容（選填）
+            <textarea id="sms-body" rows="2" placeholder="簡訊內容" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none resize-none transition-colors"></textarea>
+          </label>
+        </div>
+
+        <div id="form-vcard" class="type-form hidden space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <label class="block text-sm font-medium text-gray-700">姓名
+              <input id="vc-name" type="text" placeholder="陳小明" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" />
+            </label>
+            <label class="block text-sm font-medium text-gray-700">電話
+              <input id="vc-phone" type="tel" placeholder="+886912345678" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+            </label>
+          </div>
+          <label class="block text-sm font-medium text-gray-700">Email
+            <input id="vc-email" type="email" placeholder="someone@example.com" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">公司（選填）
+            <input id="vc-org" type="text" placeholder="公司名稱" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">職稱（選填）
+            <input id="vc-title" type="text" placeholder="職稱" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" />
+          </label>
+          <label class="block text-sm font-medium text-gray-700">網站（選填）
+            <input id="vc-url" type="url" placeholder="https://example.com" class="qr-input mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-colors" style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;" />
+          </label>
+        </div>
+      </div>
+
+      <!-- 樣式設定 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+        <h2 class="text-base font-semibold text-gray-900">樣式設定</h2>
+
+        <!-- 大小 -->
+        <div class="space-y-1.5">
+          <span class="text-sm font-medium text-gray-700">大小</span>
+          <div class="flex flex-wrap gap-2">
+            {[200, 400, 600, 800].map((s) => (
+              <button class="size-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors" data-size={s}>
+                {s}px
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- 容錯等級 -->
+        <div class="space-y-1.5">
+          <span class="text-sm font-medium text-gray-700">容錯等級</span>
+          <div class="flex flex-wrap gap-2">
+            {[
+              { val: 'L', label: 'L (7%)' },
+              { val: 'M', label: 'M (15%)' },
+              { val: 'Q', label: 'Q (25%)' },
+              { val: 'H', label: 'H (30%)' },
+            ].map(({ val, label }) => (
+              <button class="ec-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors" data-ec={val}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- 邊距 -->
+        <div class="space-y-1.5">
+          <span class="text-sm font-medium text-gray-700">邊距（quiet zone）</span>
+          <div class="flex flex-wrap gap-2">
+            {[4, 2, 0].map((m) => (
+              <button class="margin-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors" data-margin={m}>
+                {m} 模組
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <!-- 顏色 -->
+        <div class="grid grid-cols-2 gap-4">
+          <label class="space-y-1.5">
+            <span class="text-sm font-medium text-gray-700">前景色</span>
+            <div class="flex items-center gap-2">
+              <input id="color-fg" type="color" value="#000000" class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" />
+              <span id="color-fg-hex" class="text-sm text-gray-500 font-mono">#000000</span>
+            </div>
+          </label>
+          <label class="space-y-1.5">
+            <span class="text-sm font-medium text-gray-700">背景色</span>
+            <div class="flex items-center gap-2">
+              <input id="color-bg" type="color" value="#ffffff" class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" />
+              <span id="color-bg-hex" class="text-sm text-gray-500 font-mono">#ffffff</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── 右側：預覽 ───────────────────────────────── -->
+    <div class="space-y-4">
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col items-center gap-5 sticky top-4">
+        <h2 class="text-base font-semibold text-gray-900 self-start">預覽</h2>
+
+        <!-- Canvas 預覽 -->
+        <div id="qr-placeholder" class="flex flex-col items-center justify-center w-64 h-64 rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 text-gray-400 text-sm gap-2">
+          <span class="text-4xl">📱</span>
+          <span>輸入內容後即時顯示</span>
+        </div>
+        <canvas id="qr-canvas" class="hidden rounded-xl max-w-full"></canvas>
+
+        <!-- 錯誤訊息 -->
+        <div id="qr-error" class="hidden w-full text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 text-center"></div>
+
+        <!-- 下載按鈕 -->
+        <div class="flex flex-wrap gap-2 justify-center w-full">
+          <button id="btn-dl-png" class="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+            下載 PNG
+          </button>
+          <button id="btn-dl-svg" class="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+            下載 SVG
+          </button>
+          <button id="btn-copy-qr" class="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+            複製到剪貼簿
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ToolLayout>
+
+<script>
+  import QRCode from 'qrcode';
+
+  // ── 狀態 ───────────────────────────────────────────────────
+  let currentType = 'text';
+  let currentSize = 400;
+  let currentEC: 'L' | 'M' | 'Q' | 'H' = 'M';
+  let currentMargin = 4;
+  let colorFg = '#000000';
+  let colorBg = '#ffffff';
+  let currentContent = '';
+  let svgString = '';
+
+  // ── DOM refs ───────────────────────────────────────────────
+  const qrCanvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+  const qrPlaceholder = document.getElementById('qr-placeholder') as HTMLDivElement;
+  const qrError = document.getElementById('qr-error') as HTMLDivElement;
+  const btnDlPng = document.getElementById('btn-dl-png') as HTMLButtonElement;
+  const btnDlSvg = document.getElementById('btn-dl-svg') as HTMLButtonElement;
+  const btnCopyQr = document.getElementById('btn-copy-qr') as HTMLButtonElement;
+
+  // ── 類型分頁 ────────────────────────────────────────────────
+  const typeTabBtns = document.querySelectorAll<HTMLButtonElement>('.type-tab-btn');
+  const typeForms = document.querySelectorAll<HTMLDivElement>('.type-form');
+
+  function setTypeTab(type: string) {
+    currentType = type;
+    typeTabBtns.forEach((btn) => {
+      const active = btn.dataset.type === type;
+      btn.className = `type-tab-btn px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+    });
+    typeForms.forEach((f) => f.classList.add('hidden'));
+    document.getElementById(`form-${type}`)?.classList.remove('hidden');
+    scheduleUpdate();
+  }
+
+  typeTabBtns.forEach((btn) => btn.addEventListener('click', () => setTypeTab(btn.dataset.type!)));
+  setTypeTab('text'); // 預設
+
+  // ── 樣式按鈕 ────────────────────────────────────────────────
+  function activateGroup(selector: string, attrName: string, activeVal: string | number) {
+    document.querySelectorAll<HTMLButtonElement>(selector).forEach((btn) => {
+      const active = String(btn.dataset[attrName.replace('data-', '')]) === String(activeVal);
+      btn.className = `${btn.className.split(' ').filter((c) => !['bg-blue-600','text-white','border-blue-600','bg-white','text-gray-600','border-gray-200','hover:border-gray-300'].includes(c)).join(' ')} ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+    });
+  }
+
+  // 大小
+  const sizeBtns = document.querySelectorAll<HTMLButtonElement>('.size-btn');
+  sizeBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentSize = Number(btn.dataset.size);
+      sizeBtns.forEach((b) => {
+        const active = b === btn;
+        b.className = `size-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+      });
+      scheduleUpdate();
+    });
+  });
+  // 預設選中 400
+  sizeBtns.forEach((b) => {
+    const active = Number(b.dataset.size) === 400;
+    b.className = `size-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+  });
+
+  // 容錯
+  const ecBtns = document.querySelectorAll<HTMLButtonElement>('.ec-btn');
+  ecBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentEC = btn.dataset.ec as 'L' | 'M' | 'Q' | 'H';
+      ecBtns.forEach((b) => {
+        const active = b === btn;
+        b.className = `ec-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+      });
+      scheduleUpdate();
+    });
+  });
+  // 預設 M
+  ecBtns.forEach((b) => {
+    const active = b.dataset.ec === 'M';
+    b.className = `ec-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+  });
+
+  // 邊距
+  const marginBtns = document.querySelectorAll<HTMLButtonElement>('.margin-btn');
+  marginBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentMargin = Number(btn.dataset.margin);
+      marginBtns.forEach((b) => {
+        const active = b === btn;
+        b.className = `margin-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+      });
+      scheduleUpdate();
+    });
+  });
+  // 預設 4
+  marginBtns.forEach((b) => {
+    const active = Number(b.dataset.margin) === 4;
+    b.className = `margin-btn px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${active ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'}`;
+  });
+
+  // 顏色
+  const colorFgInput = document.getElementById('color-fg') as HTMLInputElement;
+  const colorBgInput = document.getElementById('color-bg') as HTMLInputElement;
+  const colorFgHex = document.getElementById('color-fg-hex') as HTMLSpanElement;
+  const colorBgHex = document.getElementById('color-bg-hex') as HTMLSpanElement;
+
+  colorFgInput.addEventListener('input', () => {
+    colorFg = colorFgInput.value;
+    colorFgHex.textContent = colorFg;
+    scheduleUpdate();
+  });
+  colorBgInput.addEventListener('input', () => {
+    colorBg = colorBgInput.value;
+    colorBgHex.textContent = colorBg;
+    scheduleUpdate();
+  });
+
+  // ── 內容組合 ────────────────────────────────────────────────
+  function escapeWifi(s: string): string {
+    return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/"/g, '\\"');
+  }
+
+  function buildContent(): string {
+    switch (currentType) {
+      case 'text':
+        return (document.getElementById('input-text') as HTMLTextAreaElement).value;
+      case 'url':
+        return (document.getElementById('input-url') as HTMLInputElement).value;
+      case 'wifi': {
+        const ssid = escapeWifi((document.getElementById('wifi-ssid') as HTMLInputElement).value);
+        const pass = escapeWifi((document.getElementById('wifi-pass') as HTMLInputElement).value);
+        const enc = (document.querySelector('input[name="wifi-enc"]:checked') as HTMLInputElement)?.value ?? 'WPA';
+        const hidden = (document.getElementById('wifi-hidden') as HTMLInputElement).checked;
+        const encVal = enc === '無' ? 'nopass' : enc;
+        return `WIFI:T:${encVal};S:${ssid};P:${pass};H:${hidden ? 'true' : 'false'};;`;
+      }
+      case 'email': {
+        const to = (document.getElementById('email-to') as HTMLInputElement).value;
+        const subject = (document.getElementById('email-subject') as HTMLInputElement).value;
+        const body = (document.getElementById('email-body') as HTMLTextAreaElement).value;
+        if (!to) return '';
+        let url = `mailto:${encodeURIComponent(to)}`;
+        const params: string[] = [];
+        if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+        if (body) params.push(`body=${encodeURIComponent(body)}`);
+        if (params.length) url += `?${params.join('&')}`;
+        return url;
+      }
+      case 'phone': {
+        const phone = (document.getElementById('input-phone') as HTMLInputElement).value;
+        return phone ? `tel:${phone}` : '';
+      }
+      case 'sms': {
+        const phone = (document.getElementById('sms-phone') as HTMLInputElement).value;
+        const body = (document.getElementById('sms-body') as HTMLTextAreaElement).value;
+        if (!phone) return '';
+        return body ? `sms:${phone}?body=${encodeURIComponent(body)}` : `sms:${phone}`;
+      }
+      case 'vcard': {
+        const name = (document.getElementById('vc-name') as HTMLInputElement).value;
+        const phone = (document.getElementById('vc-phone') as HTMLInputElement).value;
+        const email = (document.getElementById('vc-email') as HTMLInputElement).value;
+        const org = (document.getElementById('vc-org') as HTMLInputElement).value;
+        const title = (document.getElementById('vc-title') as HTMLInputElement).value;
+        const url = (document.getElementById('vc-url') as HTMLInputElement).value;
+        if (!name && !phone && !email) return '';
+        const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+        if (name) lines.push(`FN:${name}`);
+        if (phone) lines.push(`TEL:${phone}`);
+        if (email) lines.push(`EMAIL:${email}`);
+        if (org) lines.push(`ORG:${org}`);
+        if (title) lines.push(`TITLE:${title}`);
+        if (url) lines.push(`URL:${url}`);
+        lines.push('END:VCARD');
+        return lines.join('\n');
+      }
+      default:
+        return '';
+    }
+  }
+
+  // ── QR 產生 ─────────────────────────────────────────────────
+  async function generateQR(content: string) {
+    if (!content.trim()) {
+      qrCanvas.classList.add('hidden');
+      qrPlaceholder.classList.remove('hidden');
+      qrError.classList.add('hidden');
+      setDownloadEnabled(false);
+      return;
+    }
+
+    const opts = {
+      errorCorrectionLevel: currentEC,
+      margin: currentMargin,
+      width: currentSize,
+      color: { dark: colorFg, light: colorBg },
+    };
+
+    try {
+      await QRCode.toCanvas(qrCanvas, content, opts);
+      qrCanvas.classList.remove('hidden');
+      qrPlaceholder.classList.add('hidden');
+      qrError.classList.add('hidden');
+
+      svgString = await QRCode.toString(content, { ...opts, type: 'svg' });
+      setDownloadEnabled(true);
+    } catch (err) {
+      qrError.textContent = `產生失敗：${(err as Error).message}`;
+      qrError.classList.remove('hidden');
+      qrCanvas.classList.add('hidden');
+      qrPlaceholder.classList.remove('hidden');
+      setDownloadEnabled(false);
+    }
+  }
+
+  function setDownloadEnabled(enabled: boolean) {
+    btnDlPng.disabled = !enabled;
+    btnDlSvg.disabled = !enabled;
+    btnCopyQr.disabled = !enabled;
+  }
+
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  function scheduleUpdate() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      currentContent = buildContent();
+      generateQR(currentContent);
+    }, 300);
+  }
+
+  // 監聽所有輸入欄位
+  document.querySelectorAll('.qr-input').forEach((el) => {
+    el.addEventListener('input', scheduleUpdate);
+  });
+  document.querySelectorAll('input[name="wifi-enc"]').forEach((el) => {
+    el.addEventListener('change', scheduleUpdate);
+  });
+  document.getElementById('wifi-hidden')?.addEventListener('change', scheduleUpdate);
+
+  // ── 下載 PNG ────────────────────────────────────────────────
+  btnDlPng.addEventListener('click', () => {
+    const url = qrCanvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `qrcode-${currentType}.png`;
+    a.click();
+  });
+
+  // ── 下載 SVG ────────────────────────────────────────────────
+  btnDlSvg.addEventListener('click', () => {
+    const blob = new Blob([svgString], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `qrcode-${currentType}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ── 複製到剪貼簿 ────────────────────────────────────────────
+  btnCopyQr.addEventListener('click', async () => {
+    try {
+      qrCanvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        const orig = btnCopyQr.textContent!;
+        btnCopyQr.textContent = '已複製 ✓';
+        setTimeout(() => (btnCopyQr.textContent = orig), 2000);
+      });
+    } catch {
+      // 不支援時 fallback 提示
+      const orig = btnCopyQr.textContent!;
+      btnCopyQr.textContent = '此瀏覽器不支援複製圖片';
+      setTimeout(() => (btnCopyQr.textContent = orig), 2000);
+    }
+  });
+</script>

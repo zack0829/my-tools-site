@@ -1,0 +1,311 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import { tools } from '../../data/tools';
+import type { FAQItem } from '../../components/FAQ.astro';
+
+const relatedSlugs = ['base64', 'qr-code-generator', 'image-compressor'];
+const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
+
+const faqs: FAQItem[] = [
+  {
+    question: '什麼是 JSON 格式化？',
+    answer:
+      'JSON 格式化是將壓縮成單行或排版雜亂的 JSON 文字，重新整理成有縮排、易讀的結構。對開發者來說，格式化後的 JSON 能快速看清層級與欄位，除錯和閱讀都方便很多。',
+  },
+  {
+    question: '我的 JSON 資料會被上傳嗎？',
+    answer:
+      '完全不會。所有處理都在你的瀏覽器裡完成，資料從來不會離開你的裝置。就算網路斷線，這個工具也能正常使用。',
+  },
+  {
+    question: '「美化」和「壓縮」差別是什麼？',
+    answer:
+      '美化會把 JSON 展開成多行，並加上縮排，讓人容易閱讀。壓縮則是反過來，移除所有不必要的空白與換行，把 JSON 變成單行，通常用於節省傳輸流量或儲存空間。',
+  },
+  {
+    question: '為什麼我的 JSON 一直顯示錯誤？',
+    answer:
+      'JSON 格式非常嚴格，幾個常見問題：字串必須用雙引號（不能用單引號）、最後一個元素後面不能有多餘的逗號、物件的鍵也必須用雙引號包起來。可以對照錯誤訊息裡的行號找問題。',
+  },
+  {
+    question: '支援超大的 JSON 檔案嗎？',
+    answer:
+      '工具沒有硬性限制，但非常大的 JSON（例如超過 10 MB）在瀏覽器中處理可能會稍微卡頓，這是瀏覽器本身的限制，不是工具的問題。一般開發常見的 JSON 大小都沒問題。',
+  },
+];
+
+const howToSteps = [
+  '貼上 JSON：將原始 JSON 內容貼到左側輸入框。',
+  '選擇操作：點擊「美化」展開排版、「壓縮」變單行或「驗證」檢查語法。',
+  '複製結果：使用「複製結果」按鈕將處理後的 JSON 複製到剪貼簿。',
+];
+---
+
+<ToolLayout
+  title="JSON 格式化線上工具 - 美化、壓縮、驗證 JSON"
+  description="免費 JSON 格式化工具，支援美化、壓縮、驗證 JSON 語法。100% 瀏覽器處理，您的資料不會上傳。"
+  category="開發者工具"
+  faqs={faqs}
+  relatedTools={relatedTools}
+  howToSteps={howToSteps}
+  applicationCategory="DeveloperApplication"
+  operatingSystem="Web Browser"
+>
+  <div class="space-y-4">
+
+    <!-- 工具列 -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- 操作按鈕 -->
+        <button id="btn-beautify" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          美化
+        </button>
+        <button id="btn-minify" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          壓縮
+        </button>
+        <button id="btn-validate" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          驗證
+        </button>
+
+        <div class="w-px h-6 bg-gray-200 mx-1"></div>
+
+        <!-- 縮排選項 -->
+        <div class="flex items-center gap-1 text-sm text-gray-600">
+          <span class="text-gray-500 mr-1">縮排：</span>
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="indent" value="2" checked class="accent-blue-600" />
+            <span>2 格</span>
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer ml-2">
+            <input type="radio" name="indent" value="4" class="accent-blue-600" />
+            <span>4 格</span>
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer ml-2">
+            <input type="radio" name="indent" value="tab" class="accent-blue-600" />
+            <span>Tab</span>
+          </label>
+        </div>
+
+        <div class="ml-auto flex gap-2">
+          <button id="btn-copy" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            複製結果
+          </button>
+          <button id="btn-sample" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            載入範例
+          </button>
+          <button id="btn-clear" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            清除
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 狀態訊息 -->
+    <div id="status-bar" class="hidden text-sm px-4 py-2 rounded-lg font-medium"></div>
+
+    <!-- 雙欄文字框 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- 輸入 -->
+      <div class="space-y-1">
+        <label for="json-input" class="text-sm font-medium text-gray-700">輸入</label>
+        <textarea
+          id="json-input"
+          spellcheck="false"
+          placeholder='在此貼上 JSON，例如：{"name":"Alice","age":30}'
+          class="w-full h-80 p-4 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none resize-y text-sm text-gray-800 placeholder-gray-400 transition-colors"
+          style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;"
+        ></textarea>
+        <!-- 錯誤訊息 -->
+        <div id="error-msg" class="hidden text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+      </div>
+
+      <!-- 輸出 -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <label for="json-output" class="text-sm font-medium text-gray-700">輸出</label>
+          <span id="stats" class="text-xs text-gray-400"></span>
+        </div>
+        <textarea
+          id="json-output"
+          readonly
+          spellcheck="false"
+          placeholder="格式化結果會顯示在這裡"
+          class="w-full h-80 p-4 rounded-xl border border-gray-200 bg-gray-50 resize-y text-sm text-gray-800 placeholder-gray-400 outline-none"
+          style="font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;"
+        ></textarea>
+      </div>
+    </div>
+
+  </div>
+</ToolLayout>
+
+<script>
+  const inputEl = document.getElementById('json-input') as HTMLTextAreaElement;
+  const outputEl = document.getElementById('json-output') as HTMLTextAreaElement;
+  const errorMsg = document.getElementById('error-msg') as HTMLDivElement;
+  const statusBar = document.getElementById('status-bar') as HTMLDivElement;
+  const statsEl = document.getElementById('stats') as HTMLSpanElement;
+
+  const btnBeautify = document.getElementById('btn-beautify') as HTMLButtonElement;
+  const btnMinify = document.getElementById('btn-minify') as HTMLButtonElement;
+  const btnValidate = document.getElementById('btn-validate') as HTMLButtonElement;
+  const btnCopy = document.getElementById('btn-copy') as HTMLButtonElement;
+  const btnSample = document.getElementById('btn-sample') as HTMLButtonElement;
+  const btnClear = document.getElementById('btn-clear') as HTMLButtonElement;
+
+  const SAMPLE_JSON = `{
+  "name": "Alice Chen",
+  "age": 28,
+  "isActive": true,
+  "skills": ["JavaScript", "TypeScript", "Astro"],
+  "address": {
+    "city": "Taipei",
+    "country": "Taiwan"
+  },
+  "scores": [95, 87, 92],
+  "nickname": null
+}`;
+
+  function getIndent(): string | number {
+    const selected = (document.querySelector('input[name="indent"]:checked') as HTMLInputElement)?.value;
+    if (selected === 'tab') return '\t';
+    return Number(selected) || 2;
+  }
+
+  function getDepth(obj: unknown, depth = 0): number {
+    if (typeof obj !== 'object' || obj === null) return depth;
+    const values = Object.values(obj as Record<string, unknown>);
+    if (values.length === 0) return depth + 1;
+    return Math.max(...values.map((v) => getDepth(v, depth + 1)));
+  }
+
+  function countKeys(obj: unknown): number {
+    if (typeof obj !== 'object' || obj === null) return 0;
+    const entries = Object.entries(obj as Record<string, unknown>);
+    return entries.length + entries.reduce((sum, [, v]) => sum + countKeys(v), 0);
+  }
+
+  function updateStats(parsed: unknown, output: string) {
+    const depth = getDepth(parsed);
+    const keys = countKeys(parsed);
+    statsEl.textContent = `${output.length} 字元 ⋅ ${keys} 個鍵 ⋅ 深度 ${depth}`;
+  }
+
+  function showError(msg: string) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.remove('hidden');
+    outputEl.value = '';
+    statsEl.textContent = '';
+  }
+
+  function clearError() {
+    errorMsg.classList.add('hidden');
+  }
+
+  function showStatus(msg: string, type: 'success' | 'error' | 'info') {
+    const colors = {
+      success: 'bg-emerald-50 border border-emerald-200 text-emerald-700',
+      error: 'bg-red-50 border border-red-200 text-red-700',
+      info: 'bg-blue-50 border border-blue-200 text-blue-700',
+    };
+    statusBar.className = `text-sm px-4 py-2 rounded-lg font-medium ${colors[type]}`;
+    statusBar.textContent = msg;
+    statusBar.classList.remove('hidden');
+    setTimeout(() => statusBar.classList.add('hidden'), 3000);
+  }
+
+  function tryParse(text: string): { ok: true; value: unknown } | { ok: false; error: string } {
+    try {
+      return { ok: true, value: JSON.parse(text) };
+    } catch (e) {
+      return { ok: false, error: (e as Error).message };
+    }
+  }
+
+  function beautify() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    const result = tryParse(text);
+    if (!result.ok) {
+      showError(`JSON 格式錯誤：${result.error}`);
+      return;
+    }
+    clearError();
+    const indent = getIndent();
+    const output = JSON.stringify(result.value, null, indent);
+    outputEl.value = output;
+    updateStats(result.value, output);
+  }
+
+  function minify() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    const result = tryParse(text);
+    if (!result.ok) {
+      showError(`JSON 格式錯誤：${result.error}`);
+      return;
+    }
+    clearError();
+    const output = JSON.stringify(result.value);
+    outputEl.value = output;
+    updateStats(result.value, output);
+  }
+
+  function validate() {
+    const text = inputEl.value.trim();
+    if (!text) {
+      showStatus('請先輸入 JSON 內容', 'info');
+      return;
+    }
+    const result = tryParse(text);
+    if (result.ok) {
+      clearError();
+      showStatus('JSON 語法正確 ✓', 'success');
+    } else {
+      showError(`JSON 格式錯誤：${result.error}`);
+      showStatus('JSON 語法有誤，請查看下方錯誤訊息', 'error');
+    }
+  }
+
+  // debounce 自動美化
+  let debounceTimer: ReturnType<typeof setTimeout>;
+  inputEl.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      if (inputEl.value.trim()) beautify();
+      else {
+        outputEl.value = '';
+        statsEl.textContent = '';
+        clearError();
+      }
+    }, 300);
+  });
+
+  btnBeautify.addEventListener('click', beautify);
+  btnMinify.addEventListener('click', minify);
+  btnValidate.addEventListener('click', validate);
+
+  btnCopy.addEventListener('click', async () => {
+    if (!outputEl.value) {
+      showStatus('沒有可複製的內容', 'info');
+      return;
+    }
+    await navigator.clipboard.writeText(outputEl.value);
+    const orig = btnCopy.textContent;
+    btnCopy.textContent = '已複製 ✓';
+    setTimeout(() => (btnCopy.textContent = orig), 2000);
+  });
+
+  btnSample.addEventListener('click', () => {
+    inputEl.value = SAMPLE_JSON;
+    beautify();
+  });
+
+  btnClear.addEventListener('click', () => {
+    inputEl.value = '';
+    outputEl.value = '';
+    statsEl.textContent = '';
+    clearError();
+    statusBar.classList.add('hidden');
+  });
+</script>
