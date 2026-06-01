@@ -1,8 +1,10 @@
 ---
+import LangSwitcher from './LangSwitcher.astro';
+
 const navLinks = [
-  { href: '/', label: '首頁' },
-  { href: '/about', label: '關於' },
-  { href: '/privacy', label: '隱私政策' },
+  { href: '/', labelZh: '首頁', labelEn: 'Home' },
+  { href: '/about', labelZh: '關於', labelEn: 'About' },
+  { href: '/privacy', labelZh: '隱私政策', labelEn: 'Privacy' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -13,39 +15,47 @@ const currentPath = Astro.url.pathname;
     <div class="flex items-center justify-between h-16">
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 font-bold text-xl text-blue-600 hover:text-blue-700 transition-colors">
-        <span class="text-2xl">🛠️</span>
-        <span>線上工具集</span>
+      <a href="/" class="font-bold text-xl text-blue-600 hover:text-blue-700 transition-colors tracking-tight">
+        my-tools
       </a>
 
       <!-- 隱私標示 -->
       <div class="hidden sm:flex items-center gap-1.5 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1">
         <span class="text-base">🔒</span>
-        <span class="font-medium">100% 瀏覽器處理，檔案不上傳</span>
+        <span class="font-medium">
+          <span class="lang-zh">100% 瀏覽器處理，檔案不上傳</span>
+          <span class="lang-en">100% Browser-side · No Upload</span>
+        </span>
       </div>
 
-      <!-- 導覽列 -->
-      <nav class="flex items-center gap-1">
-        {navLinks.map((link) => (
-          <a
-            href={link.href}
-            class={[
-              'px-3 py-2 rounded-md text-sm font-medium transition-colors',
-              currentPath === link.href
-                ? 'bg-blue-50 text-blue-600'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
-            ].join(' ')}
-          >
-            {link.label}
-          </a>
-        ))}
-      </nav>
+      <!-- 右側：導覽列 + 語言切換 -->
+      <div class="flex items-center gap-2">
+        <nav class="flex items-center gap-1">
+          {navLinks.map((link) => (
+            <a
+              href={link.href}
+              class={[
+                'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                currentPath === link.href
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+              ].join(' ')}
+            >
+              <span class="lang-zh">{link.labelZh}</span>
+              <span class="lang-en">{link.labelEn}</span>
+            </a>
+          ))}
+        </nav>
+        <LangSwitcher />
+      </div>
 
     </div>
   </div>
 
   <!-- 行動版隱私標示 -->
   <div class="sm:hidden bg-emerald-50 border-t border-emerald-100 py-1.5 text-center text-xs text-emerald-700 font-medium">
-    🔒 100% 瀏覽器處理，檔案不上傳
+    🔒
+    <span class="lang-zh">100% 瀏覽器處理，檔案不上傳</span>
+    <span class="lang-en">100% Browser-side · No Upload</span>
   </div>
 </header>

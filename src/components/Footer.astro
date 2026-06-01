@@ -10,44 +10,75 @@ const year = new Date().getFullYear();
 
       <!-- 品牌 -->
       <div>
-        <div class="flex items-center gap-2 text-white font-bold text-lg mb-3">
-          <span class="text-xl">🛠️</span>
-          <span>線上工具集</span>
-        </div>
+        <div class="text-white font-bold text-lg mb-3 tracking-tight">my-tools</div>
         <p class="text-sm text-gray-400 leading-relaxed">
-          免費、安全的線上工具。所有處理都在您的瀏覽器中完成，檔案絕不上傳至任何伺服器。
+          <span class="lang-zh">免費、安全的線上工具。所有處理都在您的瀏覽器中完成，檔案絕不上傳至任何伺服器。</span>
+          <span class="lang-en">Free, secure online tools. All processing happens in your browser — files never leave your device.</span>
         </p>
       </div>
 
       <!-- 快速連結 -->
       <div>
-        <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">快速連結</h3>
+        <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">
+          <span class="lang-zh">快速連結</span>
+          <span class="lang-en">Quick Links</span>
+        </h3>
         <ul class="space-y-2 text-sm">
-          <li><a href="/" class="hover:text-white transition-colors">首頁</a></li>
-          <li><a href="/about" class="hover:text-white transition-colors">關於我們</a></li>
-          <li><a href="/privacy" class="hover:text-white transition-colors">隱私政策</a></li>
+          <li>
+            <a href="/" class="hover:text-white transition-colors">
+              <span class="lang-zh">首頁</span>
+              <span class="lang-en">Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="/about" class="hover:text-white transition-colors">
+              <span class="lang-zh">關於我們</span>
+              <span class="lang-en">About</span>
+            </a>
+          </li>
+          <li>
+            <a href="/privacy" class="hover:text-white transition-colors">
+              <span class="lang-zh">隱私政策</span>
+              <span class="lang-en">Privacy Policy</span>
+            </a>
+          </li>
         </ul>
       </div>
 
       <!-- 安全承諾 -->
       <div>
-        <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">安全承諾</h3>
+        <h3 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">
+          <span class="lang-zh">安全承諾</span>
+          <span class="lang-en">Security Promise</span>
+        </h3>
         <ul class="space-y-2 text-sm">
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 mt-0.5">✓</span>
-            <span>檔案不上傳伺服器</span>
+            <span>
+              <span class="lang-zh">檔案不上傳伺服器</span>
+              <span class="lang-en">Files never uploaded</span>
+            </span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 mt-0.5">✓</span>
-            <span>無需帳號或註冊</span>
+            <span>
+              <span class="lang-zh">無需帳號或註冊</span>
+              <span class="lang-en">No account or registration</span>
+            </span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 mt-0.5">✓</span>
-            <span>完全免費使用</span>
+            <span>
+              <span class="lang-zh">完全免費使用</span>
+              <span class="lang-en">Completely free to use</span>
+            </span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 mt-0.5">✓</span>
-            <span>開源透明</span>
+            <span>
+              <span class="lang-zh">開源透明</span>
+              <span class="lang-en">Open source</span>
+            </span>
           </li>
         </ul>
       </div>
@@ -58,10 +89,17 @@ const year = new Date().getFullYear();
   <!-- 底部版權列 -->
   <div class="border-t border-gray-800">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
-      <span>© {year} 線上工具集。保留所有權利。</span>
+      <span>
+        © {year}
+        <span class="lang-zh">my-tools。保留所有權利。</span>
+        <span class="lang-en">my-tools. All rights reserved.</span>
+      </span>
       <span class="flex items-center gap-1.5 text-emerald-500 font-medium">
         <span>🔒</span>
-        <span>100% 瀏覽器處理 — 您的檔案永遠不離開您的裝置</span>
+        <span>
+          <span class="lang-zh">100% 瀏覽器處理 — 您的檔案永遠不離開您的裝置</span>
+          <span class="lang-en">100% Browser-side — your files never leave your device</span>
+        </span>
       </span>
     </div>
   </div>

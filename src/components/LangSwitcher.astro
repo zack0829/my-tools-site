@@ -1,0 +1,40 @@
+---
+---
+<button
+  id="lang-switcher"
+  class="flex items-center text-sm rounded-lg border border-gray-200 overflow-hidden hover:border-blue-300 transition-colors"
+  aria-label="切換語言 / Switch language"
+  title="切換語言 / Switch language"
+>
+  <span id="ls-zh" class="px-2.5 py-1.5 transition-colors">中文</span>
+  <span class="text-gray-300 select-none text-xs leading-none">|</span>
+  <span id="ls-en" class="px-2.5 py-1.5 transition-colors">EN</span>
+</button>
+
+<script is:inline>
+  function applyLangSwitcher(lang) {
+    const zhEl = document.getElementById('ls-zh');
+    const enEl = document.getElementById('ls-en');
+    if (!zhEl || !enEl) return;
+    const active = 'px-2.5 py-1.5 transition-colors text-blue-600 bg-blue-50 font-semibold';
+    const inactive = 'px-2.5 py-1.5 transition-colors text-gray-400';
+    zhEl.className = lang === 'zh-TW' ? active : inactive;
+    enEl.className = lang === 'en' ? active : inactive;
+  }
+
+  applyLangSwitcher(localStorage.getItem('lang') || 'zh-TW');
+
+  document.getElementById('lang-switcher').addEventListener('click', function () {
+    const next = (localStorage.getItem('lang') || 'zh-TW') === 'zh-TW' ? 'en' : 'zh-TW';
+    localStorage.setItem('lang', next);
+    document.documentElement.lang = next;
+    applyLangSwitcher(next);
+    // Update dynamic placeholders
+    var placeholderMap = {
+      'zh-TW': '搜尋工具名稱或功能，例如：壓縮、PDF、Base64…',
+      'en': 'Search tools, e.g. compress, PDF, Base64…',
+    };
+    var inp = document.getElementById('search-input');
+    if (inp) inp.placeholder = placeholderMap[next];
+  });
+</script>

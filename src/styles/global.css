@@ -17,3 +17,7 @@ body {
 :focus-visible {
   @apply outline-2 outline-offset-2 outline-blue-500;
 }
+
+/* 語言切換：CSS 控制顯示，配合 html[lang] 屬性 */
+html[lang="zh-TW"] .lang-en { display: none; }
+html[lang="en"] .lang-zh { display: none; }

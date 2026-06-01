@@ -1,22 +1,27 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
-import { tools, categories, getToolsByCategory } from '../data/tools';
+import { tools, categories, getToolsByCategory, categoryTranslations } from '../data/tools';
 ---
 
 <BaseLayout
-  title="線上工具集 — 免費、安全、100% 瀏覽器處理"
+  title="my-tools — 免費線上工具集，100% 瀏覽器處理"
   description="免費線上工具集，包含圖片轉換、PDF 處理、開發者工具等。所有操作在瀏覽器完成，檔案不上傳伺服器，完全保護您的隱私。"
 >
   <!-- Hero 區 -->
   <section class="bg-gradient-to-b from-blue-600 to-blue-700 text-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-6">
       <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
-        線上工具集<br />
-        <span class="text-blue-200">100% 瀏覽器處理</span>
+        <span class="lang-zh">線上工具集<br /><span class="text-blue-200">100% 瀏覽器處理</span></span>
+        <span class="lang-en">Online Toolkit<br /><span class="text-blue-200">100% Browser-side</span></span>
       </h1>
       <p class="text-xl text-blue-100 max-w-2xl mx-auto">
-        免費使用所有工具，檔案在您的裝置上處理，<strong class="text-white">絕對不上傳伺服器</strong>，隱私完全由您掌控。
+        <span class="lang-zh">
+          免費使用所有工具，檔案在您的裝置上處理，<strong class="text-white">絕對不上傳伺服器</strong>，隱私完全由您掌控。
+        </span>
+        <span class="lang-en">
+          All tools are free. Files are processed on your device and <strong class="text-white">never sent to any server</strong>. Your privacy is fully protected.
+        </span>
       </p>
 
       <!-- 搜尋框 -->
@@ -27,6 +32,8 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
             id="search-input"
             type="search"
             placeholder="搜尋工具名稱或功能，例如：壓縮、PDF、Base64…"
+            data-placeholder-zh="搜尋工具名稱或功能，例如：壓縮、PDF、Base64…"
+            data-placeholder-en="Search tools, e.g. compress, PDF, Base64…"
             class="w-full bg-white/10 backdrop-blur border border-white/30 text-white placeholder-blue-200 rounded-xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition"
             aria-label="搜尋工具"
           />
@@ -41,11 +48,14 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
     <!-- 搜尋結果（預設隱藏） -->
     <div id="search-results" class="hidden mb-12">
       <h2 class="text-xl font-bold text-gray-900 mb-5">
-        搜尋結果：<span id="search-query-label" class="text-blue-600"></span>
+        <span class="lang-zh">搜尋結果：</span>
+        <span class="lang-en">Results for:</span>
+        <span id="search-query-label" class="text-blue-600"></span>
       </h2>
       <div id="search-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       <p id="no-results" class="hidden text-gray-500 text-center py-10">
-        找不到符合的工具，請嘗試其他關鍵字。
+        <span class="lang-zh">找不到符合的工具，請嘗試其他關鍵字。</span>
+        <span class="lang-en">No tools found. Try different keywords.</span>
       </p>
     </div>
 
@@ -53,12 +63,19 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
     <div id="category-sections">
       {categories.map((category) => {
         const categoryTools = getToolsByCategory(category);
+        const categoryEn = categoryTranslations[category];
         return (
           <div class="mb-12">
             <h2 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
               <span class="w-1 h-6 bg-blue-600 rounded-full inline-block"></span>
-              {category}
-              <span class="text-sm font-normal text-gray-400">（{categoryTools.length} 個工具）</span>
+              <span class="lang-zh">
+                {category}
+                <span class="text-sm font-normal text-gray-400">（{categoryTools.length} 個工具）</span>
+              </span>
+              <span class="lang-en">
+                {categoryEn}
+                <span class="text-sm font-normal text-gray-400">({categoryTools.length} tools)</span>
+              </span>
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categoryTools.map((tool) => (
@@ -74,30 +91,45 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
   <!-- 為什麼選擇我們 -->
   <section class="bg-gray-100 border-t border-gray-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">為什麼選擇我們？</h2>
+      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+        <span class="lang-zh">為什麼選擇我們？</span>
+        <span class="lang-en">Why choose us?</span>
+      </h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
 
         <div class="bg-white rounded-2xl p-7 shadow-sm text-center space-y-3">
           <div class="text-5xl">🔒</div>
-          <h3 class="text-xl font-bold text-gray-900">隱私優先</h3>
+          <h3 class="text-xl font-bold text-gray-900">
+            <span class="lang-zh">隱私優先</span>
+            <span class="lang-en">Privacy First</span>
+          </h3>
           <p class="text-gray-600 text-sm leading-relaxed">
-            所有檔案處理完全在您的瀏覽器中進行，不會上傳至任何伺服器，您的資料絕對安全。
+            <span class="lang-zh">所有檔案處理完全在您的瀏覽器中進行，不會上傳至任何伺服器，您的資料絕對安全。</span>
+            <span class="lang-en">All file processing happens entirely in your browser. Nothing is uploaded to any server. Your data stays yours.</span>
           </p>
         </div>
 
         <div class="bg-white rounded-2xl p-7 shadow-sm text-center space-y-3">
           <div class="text-5xl">💸</div>
-          <h3 class="text-xl font-bold text-gray-900">完全免費</h3>
+          <h3 class="text-xl font-bold text-gray-900">
+            <span class="lang-zh">完全免費</span>
+            <span class="lang-en">Completely Free</span>
+          </h3>
           <p class="text-gray-600 text-sm leading-relaxed">
-            所有工具永久免費，無隱藏費用、無訂閱制、無使用次數限制。
+            <span class="lang-zh">所有工具永久免費，無隱藏費用、無訂閱制、無使用次數限制。</span>
+            <span class="lang-en">All tools are free forever — no hidden fees, no subscriptions, no usage limits.</span>
           </p>
         </div>
 
         <div class="bg-white rounded-2xl p-7 shadow-sm text-center space-y-3">
           <div class="text-5xl">🚀</div>
-          <h3 class="text-xl font-bold text-gray-900">無需註冊</h3>
+          <h3 class="text-xl font-bold text-gray-900">
+            <span class="lang-zh">無需註冊</span>
+            <span class="lang-en">No Registration</span>
+          </h3>
           <p class="text-gray-600 text-sm leading-relaxed">
-            開啟網頁即可直接使用，不需要建立帳號、不需要登入，省去繁複流程。
+            <span class="lang-zh">開啟網頁即可直接使用，不需要建立帳號、不需要登入，省去繁複流程。</span>
+            <span class="lang-en">Open the page and start using right away. No account, no login, no hassle.</span>
           </p>
         </div>
 
@@ -108,6 +140,7 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
 
 <script>
   import { searchTools } from '../data/tools';
+  import { categoryTranslations } from '../data/tools';
 
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const searchResults = document.getElementById('search-results') as HTMLDivElement;
@@ -115,6 +148,12 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
   const noResults = document.getElementById('no-results') as HTMLParagraphElement;
   const categorySections = document.getElementById('category-sections') as HTMLDivElement;
   const searchQueryLabel = document.getElementById('search-query-label') as HTMLSpanElement;
+
+  // Sync placeholder on load
+  const savedLang = localStorage.getItem('lang') || 'zh-TW';
+  if (savedLang === 'en' && searchInput) {
+    searchInput.placeholder = searchInput.dataset.placeholderEn || '';
+  }
 
   searchInput?.addEventListener('input', () => {
     const query = searchInput.value.trim();
@@ -130,6 +169,7 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
     searchQueryLabel.textContent = `「${query}」`;
 
     const results = searchTools(query);
+    const lang = document.documentElement.lang || 'zh-TW';
     searchGrid.innerHTML = '';
     noResults.classList.toggle('hidden', results.length > 0);
 
@@ -138,15 +178,27 @@ import { tools, categories, getToolsByCategory } from '../data/tools';
       const card = document.createElement('a');
       card.href = href;
       card.className = 'group flex flex-col gap-3 bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200';
+      const categoryEn = categoryTranslations[tool.category];
       card.innerHTML = `
         <div class="flex items-start justify-between">
           <span class="text-3xl leading-none">${tool.icon}</span>
-          <span class="text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-2.5 py-0.5">${tool.category}</span>
+          <span class="text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-2.5 py-0.5">
+            <span class="lang-zh">${tool.category}</span>
+            <span class="lang-en">${categoryEn}</span>
+          </span>
         </div>
-        <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">${tool.name}</h3>
-        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-1">${tool.description}</p>
+        <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+          <span class="lang-zh">${tool.name}</span>
+          <span class="lang-en">${tool.nameEn}</span>
+        </h3>
+        <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-1">
+          <span class="lang-zh">${tool.description}</span>
+          <span class="lang-en">${tool.descriptionEn}</span>
+        </p>
         <div class="flex items-center gap-1 text-sm font-medium text-blue-600 mt-auto">
-          <span>立即使用</span><span class="group-hover:translate-x-1 transition-transform">→</span>
+          <span class="lang-zh">立即使用</span>
+          <span class="lang-en">Use Now</span>
+          <span class="group-hover:translate-x-1 transition-transform">→</span>
         </div>
       `;
       searchGrid.appendChild(card);
