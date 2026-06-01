@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://tools.example.com', // 部署後請換成實際網域
+  site: 'https://my-tools-site-5j3.pages.dev',
   integrations: [
     sitemap(),
   ],
