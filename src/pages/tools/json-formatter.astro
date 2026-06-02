@@ -9,28 +9,33 @@ const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
 const faqs: FAQItem[] = [
   {
     question: '什麼是 JSON 格式化？',
-    answer:
-      'JSON 格式化是將壓縮成單行或排版雜亂的 JSON 文字，重新整理成有縮排、易讀的結構。對開發者來說，格式化後的 JSON 能快速看清層級與欄位，除錯和閱讀都方便很多。',
+    questionEn: 'What is JSON formatting?',
+    answer: 'JSON 格式化是將壓縮成單行或排版雜亂的 JSON 文字，重新整理成有縮排、易讀的結構。對開發者來說，格式化後的 JSON 能快速看清層級與欄位，除錯和閱讀都方便很多。',
+    answerEn: 'JSON formatting re-structures compressed or messy JSON text into indented, human-readable form. For developers, formatted JSON makes it easy to scan structure and fields while debugging or reviewing data.',
   },
   {
     question: '我的 JSON 資料會被上傳嗎？',
-    answer:
-      '完全不會。所有處理都在你的瀏覽器裡完成，資料從來不會離開你的裝置。就算網路斷線，這個工具也能正常使用。',
+    questionEn: 'Will my JSON data be uploaded?',
+    answer: '完全不會。所有處理都在你的瀏覽器裡完成，資料從來不會離開你的裝置。就算網路斷線，這個工具也能正常使用。',
+    answerEn: 'Not at all. All processing happens inside your browser. Your data never leaves your device, even when offline.',
   },
   {
     question: '「美化」和「壓縮」差別是什麼？',
-    answer:
-      '美化會把 JSON 展開成多行，並加上縮排，讓人容易閱讀。壓縮則是反過來，移除所有不必要的空白與換行，把 JSON 變成單行，通常用於節省傳輸流量或儲存空間。',
+    questionEn: 'What is the difference between Beautify and Minify?',
+    answer: '美化會把 JSON 展開成多行，並加上縮排，讓人容易閱讀。壓縮則是反過來，移除所有不必要的空白與換行，把 JSON 變成單行，通常用於節省傳輸流量或儲存空間。',
+    answerEn: 'Beautify expands JSON into multiple indented lines for easy reading. Minify does the opposite — it removes all unnecessary whitespace and line breaks, collapsing JSON into a single line for compact storage or transfer.',
   },
   {
     question: '為什麼我的 JSON 一直顯示錯誤？',
-    answer:
-      'JSON 格式非常嚴格，幾個常見問題：字串必須用雙引號（不能用單引號）、最後一個元素後面不能有多餘的逗號、物件的鍵也必須用雙引號包起來。可以對照錯誤訊息裡的行號找問題。',
+    questionEn: 'Why does my JSON keep showing errors?',
+    answer: 'JSON 格式非常嚴格，幾個常見問題：字串必須用雙引號（不能用單引號）、最後一個元素後面不能有多餘的逗號、物件的鍵也必須用雙引號包起來。可以對照錯誤訊息裡的行號找問題。',
+    answerEn: 'JSON is strict. Common issues: strings must use double quotes (not single), no trailing commas after the last element, and object keys must be quoted. Use the error message line number to locate the problem.',
   },
   {
     question: '支援超大的 JSON 檔案嗎？',
-    answer:
-      '工具沒有硬性限制，但非常大的 JSON（例如超過 10 MB）在瀏覽器中處理可能會稍微卡頓，這是瀏覽器本身的限制，不是工具的問題。一般開發常見的 JSON 大小都沒問題。',
+    questionEn: 'Does it support very large JSON files?',
+    answer: '工具沒有硬性限制，但非常大的 JSON（例如超過 10 MB）在瀏覽器中處理可能會稍微卡頓，這是瀏覽器本身的限制，不是工具的問題。一般開發常見的 JSON 大小都沒問題。',
+    answerEn: 'There is no hard limit, but very large JSON (e.g. over 10 MB) may cause slight lag — this is a browser limitation, not the tool. Common development-sized JSON files are fine.',
   },
 ];
 
@@ -39,15 +44,24 @@ const howToSteps = [
   '選擇操作：點擊「美化」展開排版、「壓縮」變單行或「驗證」檢查語法。',
   '複製結果：使用「複製結果」按鈕將處理後的 JSON 複製到剪貼簿。',
 ];
+const howToStepsEn = [
+  'Paste JSON: paste your raw JSON into the left input box.',
+  'Choose an action: click Beautify to format, Minify to compress, or Validate to check syntax.',
+  'Copy result: use the "Copy Result" button to copy the processed JSON to your clipboard.',
+];
 ---
 
 <ToolLayout
   title="JSON 格式化線上工具 - 美化、壓縮、驗證 JSON"
+  titleEn="JSON Formatter — Beautify, Minify & Validate"
   description="免費 JSON 格式化工具，支援美化、壓縮、驗證 JSON 語法。100% 瀏覽器處理，您的資料不會上傳。"
+  descriptionEn="Free JSON formatter: beautify, minify, and validate JSON syntax. 100% browser-side, your data is never uploaded."
   category="開發者工具"
+  categoryEn="Developer Tools"
   faqs={faqs}
   relatedTools={relatedTools}
   howToSteps={howToSteps}
+  howToStepsEn={howToStepsEn}
   applicationCategory="DeveloperApplication"
   operatingSystem="Web Browser"
 >
@@ -58,27 +72,27 @@ const howToSteps = [
       <div class="flex flex-wrap items-center gap-2">
         <!-- 操作按鈕 -->
         <button id="btn-beautify" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          美化
+          <span class="lang-zh">美化</span><span class="lang-en">Beautify</span>
         </button>
         <button id="btn-minify" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          壓縮
+          <span class="lang-zh">壓縮</span><span class="lang-en">Minify</span>
         </button>
         <button id="btn-validate" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-          驗證
+          <span class="lang-zh">驗證</span><span class="lang-en">Validate</span>
         </button>
 
         <div class="w-px h-6 bg-gray-200 mx-1"></div>
 
         <!-- 縮排選項 -->
         <div class="flex items-center gap-1 text-sm text-gray-600">
-          <span class="text-gray-500 mr-1">縮排：</span>
+          <span class="text-gray-500 mr-1"><span class="lang-zh">縮排：</span><span class="lang-en">Indent:</span></span>
           <label class="flex items-center gap-1 cursor-pointer">
             <input type="radio" name="indent" value="2" checked class="accent-blue-600" />
-            <span>2 格</span>
+            <span><span class="lang-zh">2 格</span><span class="lang-en">2 sp</span></span>
           </label>
           <label class="flex items-center gap-1 cursor-pointer ml-2">
             <input type="radio" name="indent" value="4" class="accent-blue-600" />
-            <span>4 格</span>
+            <span><span class="lang-zh">4 格</span><span class="lang-en">4 sp</span></span>
           </label>
           <label class="flex items-center gap-1 cursor-pointer ml-2">
             <input type="radio" name="indent" value="tab" class="accent-blue-600" />
@@ -88,13 +102,13 @@ const howToSteps = [
 
         <div class="ml-auto flex gap-2">
           <button id="btn-copy" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            複製結果
+            <span class="lang-zh">複製結果</span><span class="lang-en">Copy Result</span>
           </button>
           <button id="btn-sample" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            載入範例
+            <span class="lang-zh">載入範例</span><span class="lang-en">Load Sample</span>
           </button>
           <button id="btn-clear" class="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            清除
+            <span class="lang-zh">清除</span><span class="lang-en">Clear</span>
           </button>
         </div>
       </div>
@@ -107,7 +121,7 @@ const howToSteps = [
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- 輸入 -->
       <div class="space-y-1">
-        <label for="json-input" class="text-sm font-medium text-gray-700">輸入</label>
+        <label for="json-input" class="text-sm font-medium text-gray-700"><span class="lang-zh">輸入</span><span class="lang-en">Input</span></label>
         <textarea
           id="json-input"
           spellcheck="false"

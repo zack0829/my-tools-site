@@ -10,28 +10,33 @@ const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
 const faqs: FAQItem[] = [
   {
     question: '為什麼要把 PNG 轉成 JPG？',
-    answer:
-      'PNG 是無損格式，適合有透明背景或需要精確色彩的圖片，但檔案通常較大。JPG 使用有損壓縮，同樣的圖片可以縮小到 PNG 的 1/5 甚至更小，非常適合用在網頁、社群媒體或需要縮小傳輸大小的場合。',
+    questionEn: 'Why convert PNG to JPG?',
+    answer: 'PNG 是無損格式，適合有透明背景或需要精確色彩的圖片，但檔案通常較大。JPG 使用有損壓縮，同樣的圖片可以縮小到 PNG 的 1/5 甚至更小，非常適合用在網頁、社群媒體或需要縮小傳輸大小的場合。',
+    answerEn: 'PNG is a lossless format, great for transparency and precise colors, but the files are usually large. JPG uses lossy compression and can shrink the same image to 1/5 the size or smaller — ideal for web, social media, or any scenario where file size matters.',
   },
   {
     question: '我的圖片會上傳到伺服器嗎？',
-    answer:
-      '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    questionEn: 'Will my images be uploaded to a server?',
+    answer: '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    answerEn: 'Not at all. All conversion happens inside your browser. Your images never leave your device. The tool even works offline.',
   },
   {
     question: 'JPG 品質要設多少才適合？',
-    answer:
-      '預設的 90 對大多數情況已經夠用，人眼幾乎看不出差別，但檔案比原始 PNG 小很多。如果你要放在網頁上、對檔案大小很在意，可以試試 75–80，品質仍然不錯。低於 60 才會開始出現明顯模糊或色塊。',
+    questionEn: 'What JPG quality setting should I use?',
+    answer: '預設的 90 對大多數情況已經夠用，人眼幾乎看不出差別，但檔案比原始 PNG 小很多。如果你要放在網頁上、對檔案大小很在意，可以試試 75–80，品質仍然不錯。低於 60 才會開始出現明顯模糊或色塊。',
+    answerEn: 'The default 90 works well for most cases — visually indistinguishable from the original but much smaller than the PNG. For web use where file size matters, 75–80 is still great quality. Below 60 is where noticeable artifacts start to appear.',
   },
   {
     question: '為什麼要選背景色？',
-    answer:
-      'PNG 支援透明背景，但 JPG 不支援透明。轉換時透明的地方必須填上一個顏色，預設是白色，適合大多數情況。如果你的圖片要放在深色背景上，可以改成黑色或自訂顏色，這樣合成後看起來才自然。',
+    questionEn: 'Why do I need to choose a background color?',
+    answer: 'PNG 支援透明背景，但 JPG 不支援透明。轉換時透明的地方必須填上一個顏色，預設是白色，適合大多數情況。如果你的圖片要放在深色背景上，可以改成黑色或自訂顏色，這樣合成後看起來才自然。',
+    answerEn: 'PNG supports transparency but JPG does not. Transparent areas must be filled with a solid color during conversion. White is the default and works for most cases. If your image will be placed on a dark background, choose black or a custom color for a natural result.',
   },
   {
     question: '為什麼這個工具是免費的？',
-    answer:
-      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，所以我們幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    questionEn: 'Why is this tool free?',
+    answer: '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，所以我們幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    answerEn: 'Because all processing happens in your browser — the server does nothing. With virtually no compute costs, we can offer the tool completely free, no login or payment required.',
   },
 ];
 
@@ -40,105 +45,95 @@ const howToSteps = [
   '調整轉換設定：設定 JPG 品質與透明處的背景色，預設品質 90、白色背景。',
   '下載 JPG 結果：單張下載或一鍵打包所有圖片為 ZIP。',
 ];
+const howToStepsEn = [
+  'Upload PNG images: drag and drop or click to select up to 20 PNG files at once.',
+  'Adjust settings: set JPG quality and background color for transparent areas. Defaults: quality 90, white background.',
+  'Download results: save individual JPGs or download all as a ZIP archive.',
+];
 ---
 
 <ToolLayout
   title="PNG 轉 JPG 線上免費工具"
+  titleEn="PNG to JPG Converter — Free Online Tool"
   description="100% 瀏覽器處理 PNG 轉 JPG，檔案不上傳。支援批次轉換、品質調整、自訂背景色。"
+  descriptionEn="Convert PNG to JPG online, 100% browser-side, no upload. Batch conversion, quality control, and custom background color."
   category="圖片工具"
+  categoryEn="Image Tools"
   faqs={faqs}
   relatedTools={relatedTools}
   howToSteps={howToSteps}
+  howToStepsEn={howToStepsEn}
   applicationCategory="UtilitiesApplication"
   operatingSystem="Web Browser"
 >
-  <!-- 轉換設定區 -->
   <div class="space-y-6">
     <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-      <h2 class="text-lg font-semibold text-gray-900">轉換設定</h2>
+      <h2 class="text-lg font-semibold text-gray-900">
+        <span class="lang-zh">轉換設定</span>
+        <span class="lang-en">Conversion Settings</span>
+      </h2>
 
       <!-- 品質滑桿 -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <label for="quality-slider" class="text-sm font-medium text-gray-700">
-            JPG 品質
+            <span class="lang-zh">JPG 品質</span>
+            <span class="lang-en">JPG Quality</span>
           </label>
           <span id="quality-display" class="text-sm font-bold text-blue-600">90</span>
         </div>
         <input
           id="quality-slider"
-          type="range"
-          min="1"
-          max="100"
-          value="90"
+          type="range" min="1" max="100" value="90"
           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
         />
         <div class="flex justify-between text-xs text-gray-400">
-          <span>1（最小）</span>
-          <span>100（最高品質）</span>
+          <span><span class="lang-zh">1（最小）</span><span class="lang-en">1 (smallest)</span></span>
+          <span><span class="lang-zh">100（最高品質）</span><span class="lang-en">100 (best quality)</span></span>
         </div>
       </div>
 
       <!-- 背景色選擇 -->
       <div class="space-y-2">
-        <label class="text-sm font-medium text-gray-700">透明區域背景色</label>
+        <label class="text-sm font-medium text-gray-700">
+          <span class="lang-zh">透明區域背景色</span>
+          <span class="lang-en">Background for Transparent Areas</span>
+        </label>
         <div class="flex flex-wrap gap-2">
-          <button
-            class="bg-color-btn flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-blue-500 text-sm font-medium transition-all"
-            data-color="#FFFFFF"
-            aria-pressed="true"
-          >
+          <button class="bg-color-btn flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-blue-500 text-sm font-medium transition-all" data-color="#FFFFFF" aria-pressed="true">
             <span class="inline-block w-4 h-4 rounded border border-gray-300 bg-white"></span>
-            白色
+            <span class="lang-zh">白色</span><span class="lang-en">White</span>
           </button>
-          <button
-            class="bg-color-btn flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all"
-            data-color="#000000"
-            aria-pressed="false"
-          >
+          <button class="bg-color-btn flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all" data-color="#000000" aria-pressed="false">
             <span class="inline-block w-4 h-4 rounded border border-gray-300 bg-black"></span>
-            黑色
+            <span class="lang-zh">黑色</span><span class="lang-en">Black</span>
           </button>
-          <button
-            id="custom-color-btn"
-            class="bg-color-btn flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all"
-            data-color="#FFFFFF"
-            aria-pressed="false"
-          >
+          <button id="custom-color-btn" class="bg-color-btn flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all" data-color="#FFFFFF" aria-pressed="false">
             <span id="custom-color-preview" class="inline-block w-4 h-4 rounded border border-gray-300" style="background:#FFFFFF"></span>
-            自訂
-            <input
-              id="custom-color-input"
-              type="color"
-              value="#FFFFFF"
-              class="sr-only"
-              tabindex="-1"
-              aria-label="選擇自訂背景色"
-            />
+            <span class="lang-zh">自訂</span><span class="lang-en">Custom</span>
+            <input id="custom-color-input" type="color" value="#FFFFFF" class="sr-only" tabindex="-1" aria-label="Custom background color" />
           </button>
         </div>
       </div>
     </div>
 
-    <!-- 上傳區 -->
     <FileDropZone
       accept="image/png"
       multiple={true}
       maxSizeMB={50}
       hint="拖放 PNG 圖片到此處，或點擊選擇（最多 20 張）"
+      hintEn="Drag & drop PNG images here, or click to select (up to 20)"
       inputId="png-file-input"
     />
 
-    <!-- 錯誤訊息 -->
     <div id="error-banner" class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-3 text-sm">
       <span class="text-lg shrink-0">⚠️</span>
       <span id="error-text"></span>
     </div>
 
-    <!-- 處理中進度 -->
     <div id="progress-section" class="hidden space-y-2">
       <div class="flex items-center justify-between text-sm text-gray-600">
-        <span>轉換中...</span>
+        <span><span class="lang-zh">轉換中...</span><span class="lang-en">Converting...</span></span>
         <span id="progress-text">0 / 0</span>
       </div>
       <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -146,24 +141,20 @@ const howToSteps = [
       </div>
     </div>
 
-    <!-- 結果區 -->
     <div id="results-section" class="hidden space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">轉換結果</h2>
+        <h2 class="text-lg font-semibold text-gray-900">
+          <span class="lang-zh">轉換結果</span>
+          <span class="lang-en">Results</span>
+        </h2>
         <div class="flex gap-2">
-          <button
-            id="download-all-btn"
-            class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
+          <button id="download-all-btn" class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <span>⬇️</span>
-            全部下載 ZIP
+            <span class="lang-zh">全部下載 ZIP</span><span class="lang-en">Download All ZIP</span>
           </button>
-          <button
-            id="clear-btn"
-            class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
+          <button id="clear-btn" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <span>🗑️</span>
-            清除全部
+            <span class="lang-zh">清除全部</span><span class="lang-en">Clear All</span>
           </button>
         </div>
       </div>
@@ -175,19 +166,13 @@ const howToSteps = [
 <script>
   import { zipSync } from 'fflate';
 
-  // ── 狀態 ─────────────────────────────────────────────────
+  const t = (zh: string, en: string) => document.documentElement.lang === 'en' ? en : zh;
+
   let bgColor = '#FFFFFF';
   let quality = 90;
-  interface ConvertedFile {
-    name: string;
-    blob: Blob;
-    originalSize: number;
-    convertedSize: number;
-    thumbUrl: string;
-  }
+  interface ConvertedFile { name: string; blob: Blob; originalSize: number; convertedSize: number; thumbUrl: string; }
   const convertedFiles: ConvertedFile[] = [];
 
-  // ── DOM refs ────────────────────────────────────────────
   const qualitySlider = document.getElementById('quality-slider') as HTMLInputElement;
   const qualityDisplay = document.getElementById('quality-display') as HTMLSpanElement;
   const colorBtns = document.querySelectorAll<HTMLButtonElement>('.bg-color-btn');
@@ -204,13 +189,8 @@ const howToSteps = [
   const downloadAllBtn = document.getElementById('download-all-btn') as HTMLButtonElement;
   const clearBtn = document.getElementById('clear-btn') as HTMLButtonElement;
 
-  // ── 品質滑桿 ────────────────────────────────────────────
-  qualitySlider.addEventListener('input', () => {
-    quality = Number(qualitySlider.value);
-    qualityDisplay.textContent = String(quality);
-  });
+  qualitySlider.addEventListener('input', () => { quality = Number(qualitySlider.value); qualityDisplay.textContent = String(quality); });
 
-  // ── 背景色選擇 ──────────────────────────────────────────
   function selectColor(color: string, activeBtn: HTMLButtonElement) {
     bgColor = color;
     colorBtns.forEach((btn) => {
@@ -226,11 +206,7 @@ const howToSteps = [
     if (btn.id === 'custom-color-btn') return;
     btn.addEventListener('click', () => selectColor(btn.dataset.color!, btn));
   });
-
-  customColorBtn.addEventListener('click', () => {
-    customColorInput.click();
-  });
-
+  customColorBtn.addEventListener('click', () => customColorInput.click());
   customColorInput.addEventListener('input', () => {
     const c = customColorInput.value;
     customColorPreview.style.background = c;
@@ -238,37 +214,29 @@ const howToSteps = [
     selectColor(c, customColorBtn);
   });
 
-  // ── 錯誤顯示 ────────────────────────────────────────────
   function showError(msg: string) {
     errorText.textContent = msg;
     errorBanner.classList.remove('hidden');
     setTimeout(() => errorBanner.classList.add('hidden'), 5000);
   }
 
-  // ── Canvas 轉換 ─────────────────────────────────────────
   function convertPngToJpg(file: File): Promise<{ blob: Blob; thumbUrl: string }> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onerror = () => reject(new Error('讀取檔案失敗'));
+      reader.onerror = () => reject(new Error(t('讀取檔案失敗', 'Failed to read file')));
       reader.onload = (e) => {
         const img = new Image();
-        img.onerror = () => reject(new Error('圖片載入失敗'));
+        img.onerror = () => reject(new Error(t('圖片載入失敗', 'Failed to load image')));
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
+          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
           const ctx = canvas.getContext('2d')!;
-          ctx.fillStyle = bgColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = bgColor; ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) return reject(new Error('轉換失敗'));
-              resolve({ blob, thumbUrl: canvas.toDataURL('image/jpeg', 0.5) });
-            },
-            'image/jpeg',
-            quality / 100
-          );
+          canvas.toBlob((blob) => {
+            if (!blob) return reject(new Error(t('轉換失敗', 'Conversion failed')));
+            resolve({ blob, thumbUrl: canvas.toDataURL('image/jpeg', 0.5) });
+          }, 'image/jpeg', quality / 100);
         };
         img.src = e.target!.result as string;
       };
@@ -276,7 +244,6 @@ const howToSteps = [
     });
   }
 
-  // ── 結果卡片 ────────────────────────────────────────────
   function formatSize(bytes: number): string {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -286,171 +253,90 @@ const howToSteps = [
   function addResultCard(item: ConvertedFile) {
     const ratio = (((item.originalSize - item.convertedSize) / item.originalSize) * 100).toFixed(1);
     const saved = Number(ratio) > 0;
-
     const card = document.createElement('div');
     card.className = 'bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col';
     card.innerHTML = `
       <div class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-        <img src="${item.thumbUrl}" alt="${item.name}" class="max-h-full max-w-full object-contain" loading="lazy" />
+        <img src="${item.thumbUrl}" alt="${item.name.replace('.png', '.jpg')}" class="max-h-full max-w-full object-contain" loading="lazy" />
       </div>
       <div class="p-4 flex flex-col gap-3 flex-1">
-        <p class="text-sm font-medium text-gray-900 truncate" title="${item.name.replace('.png', '.jpg')}">${item.name.replace('.png', '.jpg')}</p>
+        <p class="text-sm font-medium text-gray-900 truncate">${item.name.replace('.png', '.jpg')}</p>
         <div class="text-xs text-gray-500 space-y-1">
           <div class="flex justify-between">
-            <span>原始大小</span>
+            <span><span class="lang-zh">原始大小</span><span class="lang-en">Original</span></span>
             <span>${formatSize(item.originalSize)}</span>
           </div>
           <div class="flex justify-between">
-            <span>轉換後</span>
+            <span><span class="lang-zh">轉換後</span><span class="lang-en">Converted</span></span>
             <span>${formatSize(item.convertedSize)}</span>
           </div>
           <div class="flex justify-between font-medium ${saved ? 'text-emerald-600' : 'text-orange-500'}">
-            <span>${saved ? '節省' : '增加'}</span>
+            <span>${saved ? `<span class="lang-zh">節省</span><span class="lang-en">Saved</span>` : `<span class="lang-zh">增加</span><span class="lang-en">Increased</span>`}</span>
             <span>${saved ? '-' : '+'}${Math.abs(Number(ratio))}%</span>
           </div>
         </div>
-        <button
-          class="download-btn mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors"
-          data-name="${item.name.replace('.png', '.jpg')}"
-        >
-          <span>⬇️</span> 下載
+        <button class="download-btn mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors" data-name="${item.name.replace('.png', '.jpg')}">
+          <span>⬇️</span> <span class="lang-zh">下載</span><span class="lang-en">Download</span>
         </button>
       </div>
     `;
-
-    const downloadBtn = card.querySelector<HTMLButtonElement>('.download-btn')!;
-    downloadBtn.addEventListener('click', () => {
+    card.querySelector<HTMLButtonElement>('.download-btn')!.addEventListener('click', () => {
       const url = URL.createObjectURL(item.blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = item.name.replace('.png', '.jpg');
-      a.click();
+      const a = document.createElement('a'); a.href = url; a.download = item.name.replace('.png', '.jpg'); a.click();
       URL.revokeObjectURL(url);
     });
-
     resultsGrid.appendChild(card);
   }
 
-  // ── 主要處理邏輯 ─────────────────────────────────────────
   async function processFiles(files: FileList | File[]) {
     const fileArray = Array.from(files);
-
-    // 過濾非 PNG
     const pngFiles = fileArray.filter((f) => f.type === 'image/png' || f.name.toLowerCase().endsWith('.png'));
     const nonPng = fileArray.filter((f) => f.type !== 'image/png' && !f.name.toLowerCase().endsWith('.png'));
 
-    if (nonPng.length > 0) {
-      showError(`${nonPng.length} 個檔案不是 PNG 格式，已略過：${nonPng.map((f) => f.name).join('、')}`);
-    }
-
+    if (nonPng.length > 0) showError(t(`${nonPng.length} 個檔案不是 PNG 格式，已略過`, `${nonPng.length} file(s) are not PNG and were skipped`));
     if (pngFiles.length === 0) return;
+    if (pngFiles.length > 20) { showError(t(`一次最多轉換 20 張，已略過後面 ${pngFiles.length - 20} 張`, `Max 20 files at once. ${pngFiles.length - 20} file(s) skipped`)); pngFiles.splice(20); }
 
-    // 超過 20 張
-    if (pngFiles.length > 20) {
-      showError(`一次最多轉換 20 張，已略過後面 ${pngFiles.length - 20} 張。`);
-      pngFiles.splice(20);
-    }
-
-    // 超過 50MB 警告
     const tooBig = pngFiles.filter((f) => f.size > 50 * 1024 * 1024);
-    if (tooBig.length > 0) {
-      showError(`${tooBig.map((f) => f.name).join('、')} 超過 50 MB 上限，已略過。`);
-      pngFiles.splice(0, pngFiles.length, ...pngFiles.filter((f) => f.size <= 50 * 1024 * 1024));
-    }
-
+    if (tooBig.length > 0) { showError(t(`部分檔案超過 50 MB 上限，已略過`, `Some files exceed the 50 MB limit and were skipped`)); pngFiles.splice(0, pngFiles.length, ...pngFiles.filter((f) => f.size <= 50 * 1024 * 1024)); }
     if (pngFiles.length === 0) return;
 
-    // 清除舊結果
-    convertedFiles.length = 0;
-    resultsGrid.innerHTML = '';
-    resultsSection.classList.remove('hidden');
-    downloadAllBtn.classList.add('hidden');
-    progressSection.classList.remove('hidden');
-
-    let done = 0;
-    progressText.textContent = `0 / ${pngFiles.length}`;
-    progressBar.style.width = '0%';
+    convertedFiles.length = 0; resultsGrid.innerHTML = '';
+    resultsSection.classList.remove('hidden'); downloadAllBtn.classList.add('hidden'); progressSection.classList.remove('hidden');
+    let done = 0; progressText.textContent = `0 / ${pngFiles.length}`; progressBar.style.width = '0%';
 
     for (const file of pngFiles) {
       try {
         const { blob, thumbUrl } = await convertPngToJpg(file);
-        const item: ConvertedFile = {
-          name: file.name,
-          blob,
-          originalSize: file.size,
-          convertedSize: blob.size,
-          thumbUrl,
-        };
-        convertedFiles.push(item);
-        addResultCard(item);
-      } catch (err) {
-        showError(`${file.name} 轉換失敗，請確認檔案是否損壞。`);
-      }
-
+        const item: ConvertedFile = { name: file.name, blob, originalSize: file.size, convertedSize: blob.size, thumbUrl };
+        convertedFiles.push(item); addResultCard(item);
+      } catch { showError(t(`${file.name} 轉換失敗`, `${file.name} conversion failed`)); }
       done++;
-      const pct = Math.round((done / pngFiles.length) * 100);
-      progressBar.style.width = `${pct}%`;
+      progressBar.style.width = `${Math.round((done / pngFiles.length) * 100)}%`;
       progressText.textContent = `${done} / ${pngFiles.length}`;
     }
-
     progressSection.classList.add('hidden');
-
-    if (convertedFiles.length > 1) {
-      downloadAllBtn.classList.remove('hidden');
-    }
+    if (convertedFiles.length > 1) downloadAllBtn.classList.remove('hidden');
   }
 
-  // ── 監聽 FileDropZone 事件 ─────────────────────────────
-  document.addEventListener('files-selected', (e: Event) => {
-    const files = (e as CustomEvent<FileList>).detail;
-    processFiles(files);
-  });
+  document.addEventListener('files-selected', (e: Event) => processFiles((e as CustomEvent<FileList>).detail));
 
-  // ── 全部下載 ZIP ─────────────────────────────────────────
   downloadAllBtn.addEventListener('click', async () => {
-    downloadAllBtn.disabled = true;
-    downloadAllBtn.textContent = '打包中...';
-
+    downloadAllBtn.disabled = true; downloadAllBtn.textContent = t('打包中...', 'Packing...');
     try {
       const fileMap: Record<string, Uint8Array> = {};
-      await Promise.all(
-        convertedFiles.map(async (item) => {
-          const buf = await item.blob.arrayBuffer();
-          const name = item.name.replace('.png', '.jpg');
-          fileMap[name] = new Uint8Array(buf);
-        })
-      );
-
+      await Promise.all(convertedFiles.map(async (item) => { const buf = await item.blob.arrayBuffer(); fileMap[item.name.replace('.png', '.jpg')] = new Uint8Array(buf); }));
       const zipped = zipSync(fileMap, { level: 0 });
-      const zipBlob = new Blob([zipped], { type: 'application/zip' });
-      const url = URL.createObjectURL(zipBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'png-to-jpg.zip';
-      a.click();
-      URL.revokeObjectURL(url);
-    } finally {
-      downloadAllBtn.disabled = false;
-      downloadAllBtn.innerHTML = '<span>⬇️</span> 全部下載 ZIP';
-    }
+      const url = URL.createObjectURL(new Blob([zipped], { type: 'application/zip' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'png-to-jpg.zip'; a.click(); URL.revokeObjectURL(url);
+    } finally { downloadAllBtn.disabled = false; downloadAllBtn.innerHTML = `<span>⬇️</span> <span class="lang-zh">全部下載 ZIP</span><span class="lang-en">Download All ZIP</span>`; }
   });
 
-  // ── 清除全部 ─────────────────────────────────────────────
   clearBtn.addEventListener('click', () => {
-    convertedFiles.length = 0;
-    resultsGrid.innerHTML = '';
-    resultsSection.classList.add('hidden');
-    downloadAllBtn.classList.add('hidden');
-    progressSection.classList.add('hidden');
-    errorBanner.classList.add('hidden');
-
-    // 重置 FileDropZone 的 file input
-    const fileInput = document.getElementById('png-file-input') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-    const fileList = document.getElementById('file-list');
-    if (fileList) {
-      fileList.innerHTML = '';
-      fileList.classList.add('hidden');
-    }
+    convertedFiles.length = 0; resultsGrid.innerHTML = '';
+    resultsSection.classList.add('hidden'); downloadAllBtn.classList.add('hidden');
+    progressSection.classList.add('hidden'); errorBanner.classList.add('hidden');
+    const fi = document.getElementById('png-file-input') as HTMLInputElement; if (fi) fi.value = '';
+    const fl = document.getElementById('file-list'); if (fl) { fl.innerHTML = ''; fl.classList.add('hidden'); }
   });
 </script>

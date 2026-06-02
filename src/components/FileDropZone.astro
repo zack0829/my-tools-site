@@ -1,14 +1,10 @@
 ---
 interface Props {
-  /** 接受的檔案類型，例如 "image/png,image/jpeg" 或 ".pdf" */
   accept?: string;
-  /** 是否允許多檔案 */
   multiple?: boolean;
-  /** 最大檔案大小（MB），預設 100 */
   maxSizeMB?: number;
-  /** 顯示的提示文字 */
   hint?: string;
-  /** input 的 id，供外部綁定 label */
+  hintEn?: string;
   inputId?: string;
 }
 
@@ -17,8 +13,12 @@ const {
   multiple = false,
   maxSizeMB = 100,
   hint = '拖曳檔案到此處，或點擊選擇檔案',
+  hintEn = 'Drag & drop files here, or click to select',
   inputId = 'file-input',
 } = Astro.props;
+
+const acceptLabel = accept === '*/*' ? '所有格式' : accept;
+const acceptLabelEn = accept === '*/*' ? 'All formats' : accept;
 ---
 
 <div
@@ -26,26 +26,36 @@ const {
   class="relative flex flex-col items-center justify-center gap-4 w-full min-h-48 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer p-8 text-center"
   role="button"
   tabindex="0"
-  aria-label="檔案上傳區域"
+  aria-label="File upload area"
 >
-  <!-- 上傳圖示 -->
   <div class="flex flex-col items-center gap-2 pointer-events-none">
     <span class="text-5xl">📂</span>
-    <p class="text-base font-medium text-blue-700">{hint}</p>
-    <p class="text-sm text-gray-500">
-      支援 {accept === '*/*' ? '所有格式' : accept}
-      {multiple ? '，可選擇多個檔案' : ''}
+    <p class="text-base font-medium text-blue-700">
+      <span class="lang-zh">{hint}</span>
+      <span class="lang-en">{hintEn}</span>
     </p>
-    <p class="text-xs text-gray-400">最大 {maxSizeMB} MB</p>
+    <p class="text-sm text-gray-500">
+      <span class="lang-zh">
+        支援 {acceptLabel}{multiple ? '，可選擇多個檔案' : ''}
+      </span>
+      <span class="lang-en">
+        Supports {acceptLabelEn}{multiple ? ', multiple files' : ''}
+      </span>
+    </p>
+    <p class="text-xs text-gray-400">
+      <span class="lang-zh">最大 {maxSizeMB} MB</span>
+      <span class="lang-en">Max {maxSizeMB} MB</span>
+    </p>
   </div>
 
-  <!-- 隱私說明 -->
   <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
     <span>🔒</span>
-    <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+    <span>
+      <span class="lang-zh">檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+      <span class="lang-en">Files processed in your browser only, never uploaded</span>
+    </span>
   </div>
 
-  <!-- 實際 file input（隱藏） -->
   <input
     id={inputId}
     type="file"
@@ -56,7 +66,6 @@ const {
   />
 </div>
 
-<!-- 已選檔案清單 -->
 <div id="file-list" class="hidden mt-4 space-y-2" aria-live="polite"></div>
 
 <script>
@@ -65,7 +74,6 @@ const {
   const fileList = document.getElementById('file-list') as HTMLDivElement;
 
   if (dropZone && fileInput && fileList) {
-    // 拖曳高亮
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZone.classList.add('bg-blue-100', 'border-blue-500');
@@ -80,12 +88,10 @@ const {
       dropZone.classList.remove('bg-blue-100', 'border-blue-500');
       if (e.dataTransfer?.files) {
         showFiles(e.dataTransfer.files);
-        // 觸發自訂事件，讓工具頁面監聽
         dropZone.dispatchEvent(new CustomEvent('files-selected', { detail: e.dataTransfer.files, bubbles: true }));
       }
     });
 
-    // 鍵盤可及性
     dropZone.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();

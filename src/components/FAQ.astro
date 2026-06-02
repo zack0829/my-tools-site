@@ -1,19 +1,23 @@
 ---
 export interface FAQItem {
   question: string;
+  questionEn?: string;
   answer: string;
+  answerEn?: string;
 }
 
 interface Props {
   items: FAQItem[];
-  title?: string;
 }
 
-const { items, title = '常見問題' } = Astro.props;
+const { items } = Astro.props;
 ---
 
 <section class="w-full">
-  <h2 class="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">
+    <span class="lang-zh">常見問題</span>
+    <span class="lang-en">FAQ</span>
+  </h2>
 
   <div class="space-y-3" itemscope itemtype="https://schema.org/FAQPage">
     {items.map((item, index) => (
@@ -30,7 +34,10 @@ const { items, title = '常見問題' } = Astro.props;
           id={`faq-question-${index}`}
           itemprop="name"
         >
-          <span>{item.question}</span>
+          <span>
+            <span class="lang-zh">{item.question}</span>
+            <span class="lang-en">{item.questionEn ?? item.question}</span>
+          </span>
           <span class="faq-icon shrink-0 text-gray-400 transition-transform duration-200 text-xl leading-none">+</span>
         </button>
 
@@ -44,7 +51,8 @@ const { items, title = '常見問題' } = Astro.props;
           itemtype="https://schema.org/Answer"
         >
           <p class="text-gray-600 leading-relaxed text-sm" itemprop="text">
-            {item.answer}
+            <span class="lang-zh">{item.answer}</span>
+            <span class="lang-en">{item.answerEn ?? item.answer}</span>
           </p>
         </div>
       </div>
@@ -53,7 +61,6 @@ const { items, title = '常見問題' } = Astro.props;
 </section>
 
 <script>
-  // 手風琴互動
   document.querySelectorAll<HTMLButtonElement>('.faq-trigger').forEach((btn) => {
     btn.addEventListener('click', () => {
       const expanded = btn.getAttribute('aria-expanded') === 'true';

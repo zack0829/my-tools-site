@@ -10,28 +10,33 @@ const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
 const faqs: FAQItem[] = [
   {
     question: '為什麼要把 JPG 轉成 PNG？',
-    answer:
-      'JPG 是有損壓縮格式，不支援透明背景，適合照片類圖片。PNG 是無損格式，支援透明，非常適合用在需要去背、疊圖或放在設計素材上的情境。如果你需要把圖片放在非白色背景上，轉成 PNG 通常是更好的選擇。',
+    questionEn: 'Why convert JPG to PNG?',
+    answer: 'JPG 是有損壓縮格式，不支援透明背景，適合照片類圖片。PNG 是無損格式，支援透明，非常適合用在需要去背、疊圖或放在設計素材上的情境。如果你需要把圖片放在非白色背景上，轉成 PNG 通常是更好的選擇。',
+    answerEn: 'JPG is a lossy format with no transparency support, best for photos. PNG is lossless and supports transparency, making it ideal for backgrounds removal, overlays, or design assets. If your image needs to sit on a non-white background, PNG is the better choice.',
   },
   {
     question: '「保留透明背景」是什麼？什麼時候要勾？',
-    answer:
-      '勾選後，工具會把圖片中接近純白色的像素轉成透明，產生去背的效果。適合白色背景的產品圖、圖示等素材。如果你的圖片背景不是純白，或你只是想要無損格式保存，不需要勾選。',
+    questionEn: 'What does "Preserve Transparent Background" do?',
+    answer: '勾選後，工具會把圖片中接近純白色的像素轉成透明，產生去背的效果。適合白色背景的產品圖、圖示等素材。如果你的圖片背景不是純白，或你只是想要無損格式保存，不需要勾選。',
+    answerEn: 'When checked, the tool converts near-white pixels to transparent, creating a background-removal effect. Best for product images or icons on a white background. Skip it if your background is not pure white or if you just want lossless storage.',
   },
   {
     question: '我的圖片會上傳到伺服器嗎？',
-    answer:
-      '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    questionEn: 'Will my images be uploaded to a server?',
+    answer: '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    answerEn: 'Not at all. All conversion happens inside your browser. Your images never leave your device, even when offline.',
   },
   {
     question: '轉換後檔案會變大嗎？',
-    answer:
-      'PNG 是無損格式，通常比 JPG 大很多，這是正常的。尤其是色彩豐富的照片，PNG 可能是 JPG 的好幾倍大。如果你在意檔案大小而不需要透明背景，JPG 其實是更適合的選擇。',
+    questionEn: 'Will the converted file be larger?',
+    answer: 'PNG 是無損格式，通常比 JPG 大很多，這是正常的。尤其是色彩豐富的照片，PNG 可能是 JPG 的好幾倍大。如果你在意檔案大小而不需要透明背景，JPG 其實是更適合的選擇。',
+    answerEn: 'Yes, PNG files are generally much larger than JPG — sometimes several times the size for color-rich photos. This is normal for a lossless format. If file size matters and you do not need transparency, JPG is the better fit.',
   },
   {
     question: '為什麼這個工具是免費的？',
-    answer:
-      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，所以幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    questionEn: 'Why is this tool free?',
+    answer: '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，所以幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    answerEn: 'Because all processing happens in your browser — the server does nothing. With virtually no compute costs, we can offer the tool completely free, no login or payment required.',
   },
 ];
 
@@ -40,60 +45,66 @@ const howToSteps = [
   '選擇是否保留透明：勾選後會將白色背景轉為透明，適合做去背素材。',
   '下載 PNG 結果：單張下載或一鍵打包成 ZIP。',
 ];
+const howToStepsEn = [
+  'Upload JPG images: drag and drop or click to select up to 20 files.',
+  'Choose transparency option: check the box to convert white backgrounds to transparent — great for cutout assets.',
+  'Download PNG results: save individual files or download all as a ZIP.',
+];
 ---
 
 <ToolLayout
   title="JPG 轉 PNG 線上免費工具"
+  titleEn="JPG to PNG Converter — Free Online Tool"
   description="100% 瀏覽器處理 JPG 轉 PNG，檔案不上傳。支援批次轉換、可選保留透明背景。"
+  descriptionEn="Convert JPG to PNG online, 100% browser-side, no upload. Batch conversion with optional transparent background support."
   category="圖片工具"
+  categoryEn="Image Tools"
   faqs={faqs}
   relatedTools={relatedTools}
   howToSteps={howToSteps}
+  howToStepsEn={howToStepsEn}
   applicationCategory="UtilitiesApplication"
   operatingSystem="Web Browser"
 >
   <div class="space-y-6">
-    <!-- 轉換設定區 -->
     <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-      <h2 class="text-lg font-semibold text-gray-900">轉換設定</h2>
+      <h2 class="text-lg font-semibold text-gray-900">
+        <span class="lang-zh">轉換設定</span>
+        <span class="lang-en">Conversion Settings</span>
+      </h2>
 
-      <!-- 保留透明背景 -->
       <label class="flex items-start gap-3 cursor-pointer group">
-        <input
-          id="transparent-checkbox"
-          type="checkbox"
-          class="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-pointer"
-        />
+        <input id="transparent-checkbox" type="checkbox" class="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-pointer" />
         <div>
           <span class="text-sm font-medium text-gray-800 group-hover:text-blue-700 transition-colors">
-            保留透明背景
+            <span class="lang-zh">保留透明背景</span>
+            <span class="lang-en">Preserve Transparent Background</span>
           </span>
           <p class="text-xs text-gray-500 mt-0.5">
-            將圖片中接近純白色的像素轉換為透明，適合產品圖、圖示等白底素材去背使用。
+            <span class="lang-zh">將圖片中接近純白色的像素轉換為透明，適合產品圖、圖示等白底素材去背使用。</span>
+            <span class="lang-en">Converts near-white pixels to transparent, ideal for product images and icons on white backgrounds.</span>
           </p>
         </div>
       </label>
     </div>
 
-    <!-- 上傳區 -->
     <FileDropZone
       accept="image/jpeg,image/jpg"
       multiple={true}
       maxSizeMB={50}
       hint="拖放 JPG 圖片到此處，或點擊選擇（最多 20 張）"
+      hintEn="Drag & drop JPG images here, or click to select (up to 20)"
       inputId="jpg-file-input"
     />
 
-    <!-- 錯誤訊息 -->
     <div id="error-banner" class="hidden flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-3 text-sm">
       <span class="text-lg shrink-0">⚠️</span>
       <span id="error-text"></span>
     </div>
 
-    <!-- 處理中進度 -->
     <div id="progress-section" class="hidden space-y-2">
       <div class="flex items-center justify-between text-sm text-gray-600">
-        <span>轉換中...</span>
+        <span><span class="lang-zh">轉換中...</span><span class="lang-en">Converting...</span></span>
         <span id="progress-text">0 / 0</span>
       </div>
       <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -101,24 +112,20 @@ const howToSteps = [
       </div>
     </div>
 
-    <!-- 結果區 -->
     <div id="results-section" class="hidden space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">轉換結果</h2>
+        <h2 class="text-lg font-semibold text-gray-900">
+          <span class="lang-zh">轉換結果</span>
+          <span class="lang-en">Results</span>
+        </h2>
         <div class="flex gap-2">
-          <button
-            id="download-all-btn"
-            class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
+          <button id="download-all-btn" class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <span>⬇️</span>
-            全部下載 ZIP
+            <span class="lang-zh">全部下載 ZIP</span><span class="lang-en">Download All ZIP</span>
           </button>
-          <button
-            id="clear-btn"
-            class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
+          <button id="clear-btn" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <span>🗑️</span>
-            清除全部
+            <span class="lang-zh">清除全部</span><span class="lang-en">Clear All</span>
           </button>
         </div>
       </div>
@@ -130,19 +137,12 @@ const howToSteps = [
 <script>
   import { zipSync } from 'fflate';
 
-  // ── 狀態 ─────────────────────────────────────────────────
-  let keepTransparent = false;
+  const t = (zh: string, en: string) => document.documentElement.lang === 'en' ? en : zh;
 
-  interface ConvertedFile {
-    name: string;
-    blob: Blob;
-    originalSize: number;
-    convertedSize: number;
-    thumbUrl: string;
-  }
+  let keepTransparent = false;
+  interface ConvertedFile { name: string; blob: Blob; originalSize: number; convertedSize: number; thumbUrl: string; }
   const convertedFiles: ConvertedFile[] = [];
 
-  // ── DOM refs ────────────────────────────────────────────
   const transparentCheckbox = document.getElementById('transparent-checkbox') as HTMLInputElement;
   const errorBanner = document.getElementById('error-banner') as HTMLDivElement;
   const errorText = document.getElementById('error-text') as HTMLSpanElement;
@@ -154,58 +154,38 @@ const howToSteps = [
   const downloadAllBtn = document.getElementById('download-all-btn') as HTMLButtonElement;
   const clearBtn = document.getElementById('clear-btn') as HTMLButtonElement;
 
-  // ── 設定監聽 ────────────────────────────────────────────
-  transparentCheckbox.addEventListener('change', () => {
-    keepTransparent = transparentCheckbox.checked;
-  });
+  transparentCheckbox.addEventListener('change', () => { keepTransparent = transparentCheckbox.checked; });
 
-  // ── 錯誤顯示 ────────────────────────────────────────────
   function showError(msg: string) {
-    errorText.textContent = msg;
-    errorBanner.classList.remove('hidden');
+    errorText.textContent = msg; errorBanner.classList.remove('hidden');
     setTimeout(() => errorBanner.classList.add('hidden'), 5000);
   }
 
-  // ── 白色像素轉透明（容差 ±10） ──────────────────────────
   function applyWhiteToTransparent(ctx: CanvasRenderingContext2D, w: number, h: number) {
-    const imageData = ctx.getImageData(0, 0, w, h);
-    const data = imageData.data;
-    const tolerance = 10;
+    const imageData = ctx.getImageData(0, 0, w, h); const data = imageData.data; const tolerance = 10;
     for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      if (r >= 255 - tolerance && g >= 255 - tolerance && b >= 255 - tolerance) {
-        data[i + 3] = 0;
-      }
+      if (data[i] >= 255 - tolerance && data[i+1] >= 255 - tolerance && data[i+2] >= 255 - tolerance) data[i+3] = 0;
     }
     ctx.putImageData(imageData, 0, 0);
   }
 
-  // ── Canvas 轉換 ─────────────────────────────────────────
   function convertJpgToPng(file: File): Promise<{ blob: Blob; thumbUrl: string }> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onerror = () => reject(new Error('讀取檔案失敗'));
+      reader.onerror = () => reject(new Error(t('讀取檔案失敗', 'Failed to read file')));
       reader.onload = (e) => {
         const img = new Image();
-        img.onerror = () => reject(new Error('圖片載入失敗'));
+        img.onerror = () => reject(new Error(t('圖片載入失敗', 'Failed to load image')));
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
+          canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
           const ctx = canvas.getContext('2d')!;
           ctx.drawImage(img, 0, 0);
-          if (keepTransparent) {
-            applyWhiteToTransparent(ctx, canvas.width, canvas.height);
-          }
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) return reject(new Error('轉換失敗'));
-              resolve({ blob, thumbUrl: canvas.toDataURL('image/png') });
-            },
-            'image/png'
-          );
+          if (keepTransparent) applyWhiteToTransparent(ctx, canvas.width, canvas.height);
+          canvas.toBlob((blob) => {
+            if (!blob) return reject(new Error(t('轉換失敗', 'Conversion failed')));
+            resolve({ blob, thumbUrl: canvas.toDataURL('image/png') });
+          }, 'image/png');
         };
         img.src = e.target!.result as string;
       };
@@ -213,19 +193,16 @@ const howToSteps = [
     });
   }
 
-  // ── 格式化大小 ──────────────────────────────────────────
   function formatSize(bytes: number): string {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
   }
 
-  // ── 結果卡片 ────────────────────────────────────────────
   function addResultCard(item: ConvertedFile) {
     const ratio = (((item.originalSize - item.convertedSize) / item.originalSize) * 100).toFixed(1);
     const saved = Number(ratio) > 0;
     const pngName = item.name.replace(/\.(jpg|jpeg)$/i, '.png');
-
     const card = document.createElement('div');
     card.className = 'bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col';
     card.innerHTML = `
@@ -233,162 +210,78 @@ const howToSteps = [
         <img src="${item.thumbUrl}" alt="${pngName}" class="max-h-full max-w-full object-contain" loading="lazy" />
       </div>
       <div class="p-4 flex flex-col gap-3 flex-1">
-        <p class="text-sm font-medium text-gray-900 truncate" title="${pngName}">${pngName}</p>
+        <p class="text-sm font-medium text-gray-900 truncate">${pngName}</p>
         <div class="text-xs text-gray-500 space-y-1">
-          <div class="flex justify-between">
-            <span>原始大小</span>
-            <span>${formatSize(item.originalSize)}</span>
-          </div>
-          <div class="flex justify-between">
-            <span>轉換後</span>
-            <span>${formatSize(item.convertedSize)}</span>
-          </div>
+          <div class="flex justify-between"><span><span class="lang-zh">原始大小</span><span class="lang-en">Original</span></span><span>${formatSize(item.originalSize)}</span></div>
+          <div class="flex justify-between"><span><span class="lang-zh">轉換後</span><span class="lang-en">Converted</span></span><span>${formatSize(item.convertedSize)}</span></div>
           <div class="flex justify-between font-medium ${saved ? 'text-emerald-600' : 'text-orange-500'}">
-            <span>${saved ? '節省' : '增加'}</span>
+            <span>${saved ? `<span class="lang-zh">節省</span><span class="lang-en">Saved</span>` : `<span class="lang-zh">增加</span><span class="lang-en">Increased</span>`}</span>
             <span>${saved ? '-' : '+'}${Math.abs(Number(ratio))}%</span>
           </div>
         </div>
-        <button
-          class="download-btn mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors"
-          data-name="${pngName}"
-        >
-          <span>⬇️</span> 下載
+        <button class="download-btn mt-auto w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors" data-name="${pngName}">
+          <span>⬇️</span> <span class="lang-zh">下載</span><span class="lang-en">Download</span>
         </button>
       </div>
     `;
-
-    const downloadBtn = card.querySelector<HTMLButtonElement>('.download-btn')!;
-    downloadBtn.addEventListener('click', () => {
+    card.querySelector<HTMLButtonElement>('.download-btn')!.addEventListener('click', () => {
       const url = URL.createObjectURL(item.blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = pngName;
-      a.click();
-      URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = pngName; a.click(); URL.revokeObjectURL(url);
     });
-
     resultsGrid.appendChild(card);
   }
 
-  // ── 主要處理邏輯 ─────────────────────────────────────────
   async function processFiles(files: FileList | File[]) {
     const fileArray = Array.from(files);
+    const jpgFiles = fileArray.filter((f) => f.type === 'image/jpeg' || f.name.toLowerCase().match(/\.(jpg|jpeg)$/));
+    const nonJpg = fileArray.filter((f) => !f.type.startsWith('image/jpeg') && !f.name.toLowerCase().match(/\.(jpg|jpeg)$/));
 
-    const jpgFiles = fileArray.filter(
-      (f) => f.type === 'image/jpeg' || f.name.toLowerCase().match(/\.(jpg|jpeg)$/)
-    );
-    const nonJpg = fileArray.filter(
-      (f) => !f.type.startsWith('image/jpeg') && !f.name.toLowerCase().match(/\.(jpg|jpeg)$/)
-    );
-
-    if (nonJpg.length > 0) {
-      showError(`${nonJpg.length} 個檔案不是 JPG 格式，已略過：${nonJpg.map((f) => f.name).join('、')}`);
-    }
-
+    if (nonJpg.length > 0) showError(t(`${nonJpg.length} 個檔案不是 JPG 格式，已略過`, `${nonJpg.length} file(s) are not JPG and were skipped`));
     if (jpgFiles.length === 0) return;
-
-    if (jpgFiles.length > 20) {
-      showError(`一次最多轉換 20 張，已略過後面 ${jpgFiles.length - 20} 張。`);
-      jpgFiles.splice(20);
-    }
+    if (jpgFiles.length > 20) { showError(t(`一次最多轉換 20 張，已略過後面 ${jpgFiles.length - 20} 張`, `Max 20 files. ${jpgFiles.length - 20} skipped`)); jpgFiles.splice(20); }
 
     const tooBig = jpgFiles.filter((f) => f.size > 50 * 1024 * 1024);
-    if (tooBig.length > 0) {
-      showError(`${tooBig.map((f) => f.name).join('、')} 超過 50 MB 上限，已略過。`);
-      jpgFiles.splice(0, jpgFiles.length, ...jpgFiles.filter((f) => f.size <= 50 * 1024 * 1024));
-    }
-
+    if (tooBig.length > 0) { showError(t('部分檔案超過 50 MB 上限，已略過', 'Some files exceed 50 MB and were skipped')); jpgFiles.splice(0, jpgFiles.length, ...jpgFiles.filter((f) => f.size <= 50 * 1024 * 1024)); }
     if (jpgFiles.length === 0) return;
 
-    convertedFiles.length = 0;
-    resultsGrid.innerHTML = '';
-    resultsSection.classList.remove('hidden');
-    downloadAllBtn.classList.add('hidden');
-    progressSection.classList.remove('hidden');
-
-    let done = 0;
-    progressText.textContent = `0 / ${jpgFiles.length}`;
-    progressBar.style.width = '0%';
+    convertedFiles.length = 0; resultsGrid.innerHTML = '';
+    resultsSection.classList.remove('hidden'); downloadAllBtn.classList.add('hidden'); progressSection.classList.remove('hidden');
+    let done = 0; progressText.textContent = `0 / ${jpgFiles.length}`; progressBar.style.width = '0%';
 
     for (const file of jpgFiles) {
       try {
         const { blob, thumbUrl } = await convertJpgToPng(file);
-        const item: ConvertedFile = {
-          name: file.name,
-          blob,
-          originalSize: file.size,
-          convertedSize: blob.size,
-          thumbUrl,
-        };
-        convertedFiles.push(item);
-        addResultCard(item);
-      } catch {
-        showError(`${file.name} 轉換失敗，請確認檔案是否損壞。`);
-      }
-
+        const item: ConvertedFile = { name: file.name, blob, originalSize: file.size, convertedSize: blob.size, thumbUrl };
+        convertedFiles.push(item); addResultCard(item);
+      } catch { showError(t(`${file.name} 轉換失敗`, `${file.name} conversion failed`)); }
       done++;
-      const pct = Math.round((done / jpgFiles.length) * 100);
-      progressBar.style.width = `${pct}%`;
+      progressBar.style.width = `${Math.round((done / jpgFiles.length) * 100)}%`;
       progressText.textContent = `${done} / ${jpgFiles.length}`;
     }
-
     progressSection.classList.add('hidden');
-
-    if (convertedFiles.length > 1) {
-      downloadAllBtn.classList.remove('hidden');
-    }
+    if (convertedFiles.length > 1) downloadAllBtn.classList.remove('hidden');
   }
 
-  // ── 監聽 FileDropZone 事件 ─────────────────────────────
-  document.addEventListener('files-selected', (e: Event) => {
-    const files = (e as CustomEvent<FileList>).detail;
-    processFiles(files);
-  });
+  document.addEventListener('files-selected', (e: Event) => processFiles((e as CustomEvent<FileList>).detail));
 
-  // ── 全部下載 ZIP ─────────────────────────────────────────
   downloadAllBtn.addEventListener('click', async () => {
-    downloadAllBtn.disabled = true;
-    downloadAllBtn.textContent = '打包中...';
-
+    downloadAllBtn.disabled = true; downloadAllBtn.textContent = t('打包中...', 'Packing...');
     try {
       const fileMap: Record<string, Uint8Array> = {};
-      await Promise.all(
-        convertedFiles.map(async (item) => {
-          const buf = await item.blob.arrayBuffer();
-          const name = item.name.replace(/\.(jpg|jpeg)$/i, '.png');
-          fileMap[name] = new Uint8Array(buf);
-        })
-      );
-
-      const zipped = zipSync(fileMap, { level: 0 });
-      const zipBlob = new Blob([zipped], { type: 'application/zip' });
-      const url = URL.createObjectURL(zipBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'jpg-to-png.zip';
-      a.click();
-      URL.revokeObjectURL(url);
-    } finally {
-      downloadAllBtn.disabled = false;
-      downloadAllBtn.innerHTML = '<span>⬇️</span> 全部下載 ZIP';
-    }
+      await Promise.all(convertedFiles.map(async (item) => {
+        const buf = await item.blob.arrayBuffer();
+        fileMap[item.name.replace(/\.(jpg|jpeg)$/i, '.png')] = new Uint8Array(buf);
+      }));
+      const url = URL.createObjectURL(new Blob([zipSync(fileMap, { level: 0 })], { type: 'application/zip' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'jpg-to-png.zip'; a.click(); URL.revokeObjectURL(url);
+    } finally { downloadAllBtn.disabled = false; downloadAllBtn.innerHTML = `<span>⬇️</span> <span class="lang-zh">全部下載 ZIP</span><span class="lang-en">Download All ZIP</span>`; }
   });
 
-  // ── 清除全部 ─────────────────────────────────────────────
   clearBtn.addEventListener('click', () => {
-    convertedFiles.length = 0;
-    resultsGrid.innerHTML = '';
-    resultsSection.classList.add('hidden');
-    downloadAllBtn.classList.add('hidden');
-    progressSection.classList.add('hidden');
-    errorBanner.classList.add('hidden');
-
-    const fileInput = document.getElementById('jpg-file-input') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-    const fileList = document.getElementById('file-list');
-    if (fileList) {
-      fileList.innerHTML = '';
-      fileList.classList.add('hidden');
-    }
+    convertedFiles.length = 0; resultsGrid.innerHTML = '';
+    resultsSection.classList.add('hidden'); downloadAllBtn.classList.add('hidden');
+    progressSection.classList.add('hidden'); errorBanner.classList.add('hidden');
+    const fi = document.getElementById('jpg-file-input') as HTMLInputElement; if (fi) fi.value = '';
+    const fl = document.getElementById('file-list'); if (fl) { fl.innerHTML = ''; fl.classList.add('hidden'); }
   });
 </script>

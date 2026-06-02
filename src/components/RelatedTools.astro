@@ -4,15 +4,17 @@ import ToolCard from './ToolCard.astro';
 
 interface Props {
   tools: Tool[];
-  title?: string;
 }
 
-const { tools, title = '相關工具' } = Astro.props;
+const { tools } = Astro.props;
 ---
 
 {tools.length > 0 && (
   <section class="w-full">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">{title}</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+      <span class="lang-zh">相關工具</span>
+      <span class="lang-en">Related Tools</span>
+    </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {tools.map((tool) => (
         <ToolCard tool={tool} />

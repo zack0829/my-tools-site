@@ -9,28 +9,33 @@ const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
 const faqs: FAQItem[] = [
   {
     question: 'WebP 是什麼格式？為什麼要用？',
-    answer:
-      'WebP 是 Google 開發的現代圖片格式，相同畫質下比 JPG 小約 25–35%，比透明 PNG 也小很多。網站使用 WebP 可以加速頁面載入、改善 SEO 分數，是目前最推薦的網頁圖片格式之一。',
+    questionEn: 'What is WebP and why use it?',
+    answer: 'WebP 是 Google 開發的現代圖片格式，相同畫質下比 JPG 小約 25–35%，比透明 PNG 也小很多。網站使用 WebP 可以加速頁面載入、改善 SEO 分數，是目前最推薦的網頁圖片格式之一。',
+    answerEn: 'WebP is a modern image format developed by Google. At the same quality, it is about 25–35% smaller than JPG and significantly smaller than transparent PNG. Using WebP on websites speeds up page loads and improves SEO scores.',
   },
   {
     question: 'WebP 所有瀏覽器都支援嗎？',
-    answer:
-      'Chrome、Firefox、Safari、Edge 等主流瀏覽器近幾年都已支援 WebP。如果你的圖片需要在較舊環境（如 IE 11 或舊版 iOS Safari）下使用，才需要考慮改用 JPG 或 PNG。',
+    questionEn: 'Is WebP supported by all browsers?',
+    answer: 'Chrome、Firefox、Safari、Edge 等主流瀏覽器近幾年都已支援 WebP。如果你的圖片需要在較舊環境（如 IE 11 或舊版 iOS Safari）下使用，才需要考慮改用 JPG 或 PNG。',
+    answerEn: 'All major modern browsers — Chrome, Firefox, Safari, and Edge — support WebP. Only very old environments like IE 11 or old iOS Safari require a fallback to JPG or PNG.',
   },
   {
     question: '「其他轉 WebP」和「WebP 轉其他」差別在哪？',
-    answer:
-      '「其他轉 WebP」是把你的 JPG 或 PNG 轉成更小的 WebP，適合準備網站素材。「WebP 轉其他」是把 WebP 轉回 JPG 或 PNG，適合收到 WebP 但需要相容其他軟體時使用。',
+    questionEn: 'What is the difference between the two conversion modes?',
+    answer: '「其他轉 WebP」是把你的 JPG 或 PNG 轉成更小的 WebP，適合準備網站素材。「WebP 轉其他」是把 WebP 轉回 JPG 或 PNG，適合收到 WebP 但需要相容其他軟體時使用。',
+    answerEn: '"To WebP" converts your JPG or PNG into a smaller WebP — great for preparing web assets. "From WebP" converts WebP back to JPG or PNG, useful when you receive a WebP file but need compatibility with other software.',
   },
   {
     question: '我的圖片會上傳到伺服器嗎？',
-    answer:
-      '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    questionEn: 'Will my images be uploaded to a server?',
+    answer: '完全不會。所有轉換都在你的瀏覽器裡完成，圖片從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    answerEn: 'Not at all. All conversion happens inside your browser. Your images never leave your device, even when offline.',
   },
   {
     question: '為什麼這個工具是免費的？',
-    answer:
-      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    questionEn: 'Why is this tool free?',
+    answer: '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    answerEn: 'Because all processing happens in your browser — the server does nothing. With virtually no compute costs, we can offer the tool completely free.',
   },
 ];
 
@@ -39,15 +44,24 @@ const howToSteps = [
   '上傳圖片並設定：拖放圖片，調整品質或選擇輸出格式。',
   '下載轉換結果：單張下載或一鍵打包成 ZIP。',
 ];
+const howToStepsEn = [
+  'Choose direction: click the "To WebP" or "From WebP" tab.',
+  'Upload and configure: drag & drop your images, then adjust quality or output format.',
+  'Download results: save individual files or download all as a ZIP.',
+];
 ---
 
 <ToolLayout
   title="WebP 轉換器 - 線上免費 WebP 轉 JPG/PNG 或反向轉換"
+  titleEn="WebP Converter — Free Online Tool"
   description="雙向 WebP 轉換工具，支援 JPG/PNG 轉 WebP 或 WebP 轉 JPG/PNG。100% 瀏覽器處理，檔案不上傳。"
+  descriptionEn="Two-way WebP converter: convert JPG/PNG to WebP, or WebP back to JPG/PNG. 100% browser-side, no upload."
   category="圖片工具"
+  categoryEn="Image Tools"
   faqs={faqs}
   relatedTools={relatedTools}
   howToSteps={howToSteps}
+  howToStepsEn={howToStepsEn}
   applicationCategory="UtilitiesApplication"
   operatingSystem="Web Browser"
 >
@@ -58,13 +72,15 @@ const howToSteps = [
         id="tab-to-webp"
         class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all bg-white text-blue-700 shadow-sm"
       >
-        其他轉 WebP
+        <span class="lang-zh">其他轉 WebP</span>
+        <span class="lang-en">To WebP</span>
       </button>
       <button
         id="tab-from-webp"
         class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700"
       >
-        WebP 轉其他
+        <span class="lang-zh">WebP 轉其他</span>
+        <span class="lang-en">From WebP</span>
       </button>
     </div>
 
@@ -72,10 +88,14 @@ const howToSteps = [
     <div id="panel-to-webp" class="space-y-6">
       <!-- 設定區 -->
       <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-        <h2 class="text-lg font-semibold text-gray-900">轉換設定</h2>
+        <h2 class="text-lg font-semibold text-gray-900">
+          <span class="lang-zh">轉換設定</span><span class="lang-en">Conversion Settings</span>
+        </h2>
         <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label for="quality-slider" class="text-sm font-medium text-gray-700">WebP 品質</label>
+            <label for="quality-slider" class="text-sm font-medium text-gray-700">
+              <span class="lang-zh">WebP 品質</span><span class="lang-en">WebP Quality</span>
+            </label>
             <span id="quality-display" class="text-sm font-bold text-blue-600">85</span>
           </div>
           <input
@@ -87,8 +107,8 @@ const howToSteps = [
             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
           <div class="flex justify-between text-xs text-gray-400">
-            <span>1（最小）</span>
-            <span>100（最高品質）</span>
+            <span><span class="lang-zh">1（最小）</span><span class="lang-en">1 (smallest)</span></span>
+            <span><span class="lang-zh">100（最高品質）</span><span class="lang-en">100 (best)</span></span>
           </div>
         </div>
       </div>
@@ -103,13 +123,19 @@ const howToSteps = [
       >
         <div class="flex flex-col items-center gap-2 pointer-events-none">
           <span class="text-5xl">📂</span>
-          <p class="text-base font-medium text-blue-700">拖放 JPG 或 PNG 圖片到此處，或點擊選擇（最多 20 張）</p>
-          <p class="text-sm text-gray-500">支援 JPG、PNG，可選擇多個檔案</p>
-          <p class="text-xs text-gray-400">最大 50 MB</p>
+          <p class="text-base font-medium text-blue-700">
+            <span class="lang-zh">拖放 JPG 或 PNG 圖片到此處，或點擊選擇（最多 20 張）</span>
+            <span class="lang-en">Drag & drop JPG or PNG here, or click to select (up to 20)</span>
+          </p>
+          <p class="text-sm text-gray-500">
+            <span class="lang-zh">支援 JPG、PNG，可選擇多個檔案</span>
+            <span class="lang-en">Supports JPG, PNG, multiple files</span>
+          </p>
+          <p class="text-xs text-gray-400"><span class="lang-zh">最大 50 MB</span><span class="lang-en">Max 50 MB</span></p>
         </div>
         <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
           <span>🔒</span>
-          <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+          <span><span class="lang-zh">檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span><span class="lang-en">Files processed in your browser only, never uploaded</span></span>
         </div>
         <input
           id="input-to-webp"
@@ -127,16 +153,16 @@ const howToSteps = [
     <div id="panel-from-webp" class="hidden space-y-6">
       <!-- 設定區 -->
       <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-        <h2 class="text-lg font-semibold text-gray-900">輸出格式</h2>
+        <h2 class="text-lg font-semibold text-gray-900">
+          <span class="lang-zh">輸出格式</span><span class="lang-en">Output Format</span>
+        </h2>
         <div class="flex flex-wrap gap-2">
-          <button
-            class="output-fmt-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-sm font-medium transition-all"
-            data-format="image/jpeg"
-          >輸出 JPG</button>
-          <button
-            class="output-fmt-btn px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all"
-            data-format="image/png"
-          >輸出 PNG</button>
+          <button class="output-fmt-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-sm font-medium transition-all" data-format="image/jpeg">
+            <span class="lang-zh">輸出 JPG</span><span class="lang-en">Output JPG</span>
+          </button>
+          <button class="output-fmt-btn px-4 py-2 rounded-lg border-2 border-transparent bg-gray-100 text-sm font-medium transition-all" data-format="image/png">
+            <span class="lang-zh">輸出 PNG</span><span class="lang-en">Output PNG</span>
+          </button>
         </div>
       </div>
 
@@ -150,13 +176,19 @@ const howToSteps = [
       >
         <div class="flex flex-col items-center gap-2 pointer-events-none">
           <span class="text-5xl">📂</span>
-          <p class="text-base font-medium text-blue-700">拖放 WebP 圖片到此處，或點擊選擇（最多 20 張）</p>
-          <p class="text-sm text-gray-500">支援 WebP，可選擇多個檔案</p>
-          <p class="text-xs text-gray-400">最大 50 MB</p>
+          <p class="text-base font-medium text-blue-700">
+            <span class="lang-zh">拖放 WebP 圖片到此處，或點擊選擇（最多 20 張）</span>
+            <span class="lang-en">Drag & drop WebP images here, or click to select (up to 20)</span>
+          </p>
+          <p class="text-sm text-gray-500">
+            <span class="lang-zh">支援 WebP，可選擇多個檔案</span>
+            <span class="lang-en">Supports WebP, multiple files</span>
+          </p>
+          <p class="text-xs text-gray-400"><span class="lang-zh">最大 50 MB</span><span class="lang-en">Max 50 MB</span></p>
         </div>
         <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
           <span>🔒</span>
-          <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+          <span><span class="lang-zh">檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span><span class="lang-en">Files processed in your browser only, never uploaded</span></span>
         </div>
         <input
           id="input-from-webp"
@@ -179,7 +211,7 @@ const howToSteps = [
     <!-- 處理中進度 -->
     <div id="progress-section" class="hidden space-y-2">
       <div class="flex items-center justify-between text-sm text-gray-600">
-        <span>轉換中...</span>
+        <span><span class="lang-zh">轉換中...</span><span class="lang-en">Converting...</span></span>
         <span id="progress-text">0 / 0</span>
       </div>
       <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -190,21 +222,17 @@ const howToSteps = [
     <!-- 結果區 -->
     <div id="results-section" class="hidden space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">轉換結果</h2>
+        <h2 class="text-lg font-semibold text-gray-900">
+          <span class="lang-zh">轉換結果</span><span class="lang-en">Results</span>
+        </h2>
         <div class="flex gap-2">
-          <button
-            id="download-all-btn"
-            class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
+          <button id="download-all-btn" class="hidden flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <span>⬇️</span>
-            全部下載 ZIP
+            <span class="lang-zh">全部下載 ZIP</span><span class="lang-en">Download All ZIP</span>
           </button>
-          <button
-            id="clear-btn"
-            class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
+          <button id="clear-btn" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <span>🗑️</span>
-            清除全部
+            <span class="lang-zh">清除全部</span><span class="lang-en">Clear All</span>
           </button>
         </div>
       </div>

@@ -9,28 +9,33 @@ const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
 const faqs: FAQItem[] = [
   {
     question: '我的 PDF 會上傳到伺服器嗎？',
-    answer:
-      '完全不會。所有處理都在你的瀏覽器裡完成，PDF 檔案從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    questionEn: 'Will my PDFs be uploaded to a server?',
+    answer: '完全不會。所有處理都在你的瀏覽器裡完成，PDF 檔案從來不會離開你的裝置。就算網路斷線，這個工具也能正常運作。',
+    answerEn: 'Not at all. All processing happens inside your browser. Your PDF files never leave your device, even when offline.',
   },
   {
     question: '一次最多可以合併幾個 PDF？',
-    answer:
-      '一次最多合併 20 個 PDF，每個檔案上限 100 MB。如果你的需求超過這個限制，可以分批合併再重複操作。',
+    questionEn: 'How many PDFs can I merge at once?',
+    answer: '一次最多合併 20 個 PDF，每個檔案上限 100 MB。如果你的需求超過這個限制，可以分批合併再重複操作。',
+    answerEn: 'Up to 20 PDFs at once, with each file up to 100 MB. If you need more, merge in batches and repeat.',
   },
   {
     question: '合併後的 PDF 會不會變大？',
-    answer:
-      '合併後的大小基本上是所有原始檔案的加總。如果勾選「壓縮輸出」，pdf-lib 會啟用物件流壓縮，通常可以讓檔案略小一些，但效果因原始 PDF 內容而異。',
+    questionEn: 'Will the merged PDF be larger?',
+    answer: '合併後的大小基本上是所有原始檔案的加總。如果勾選「壓縮輸出」，pdf-lib 會啟用物件流壓縮，通常可以讓檔案略小一些，但效果因原始 PDF 內容而異。',
+    answerEn: 'The merged file is roughly the sum of all input sizes. Enabling "Compress Output" turns on object-stream compression which can slightly reduce the size, though results vary by content.',
   },
   {
     question: '為什麼有「壓縮輸出」選項？',
-    answer:
-      '「壓縮輸出」會啟用 PDF 的物件流（Object Streams）壓縮，適合想縮小最終檔案的情況。預設關閉是因為壓縮需要額外運算時間，處理大型 PDF 時會比較慢。',
+    questionEn: 'What does "Compress Output" do?',
+    answer: '「壓縮輸出」會啟用 PDF 的物件流（Object Streams）壓縮，適合想縮小最終檔案的情況。預設關閉是因為壓縮需要額外運算時間，處理大型 PDF 時會比較慢。',
+    answerEn: '"Compress Output" enables PDF object-stream compression to reduce the final file size. It is off by default because it adds processing time, which can be noticeable for large PDFs.',
   },
   {
     question: '為什麼這個工具是免費的？',
-    answer:
-      '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    questionEn: 'Why is this tool free?',
+    answer: '因為所有運算都在你的瀏覽器裡發生，伺服器不需要做任何處理，幾乎沒有運算成本。工具本身就是這樣能免費提供的原因，不需要你登入或付費。',
+    answerEn: 'Because all processing happens in your browser — the server does nothing. With virtually no compute costs, we can offer the tool completely free.',
   },
 ];
 
@@ -39,29 +44,39 @@ const howToSteps = [
   '調整順序：在清單上拖曳檔案改變合併順序，可隨時移除不要的檔案。',
   '開始合併：點擊「開始合併」按鈕後即可下載合併好的 PDF。',
 ];
+const howToStepsEn = [
+  'Upload PDFs: drag & drop or click to select multiple PDF files at once.',
+  'Reorder: drag items in the list to change the merge order; remove any unwanted files.',
+  'Merge: click "Start Merge" and download the combined PDF.',
+];
 ---
 
 <ToolLayout
   title="PDF 合併線上工具 - 免費批次合併 PDF 不上傳"
+  titleEn="PDF Merge — Free Online Tool"
   description="100% 瀏覽器處理的 PDF 合併工具，支援拖曳排序、批次合併多個 PDF 為一份檔案，檔案不上傳保護隱私。"
+  descriptionEn="Free browser-side PDF merge tool. Drag to reorder, batch merge multiple PDFs into one file, no upload."
   category="PDF 工具"
+  categoryEn="PDF Tools"
   faqs={faqs}
   relatedTools={relatedTools}
   howToSteps={howToSteps}
+  howToStepsEn={howToStepsEn}
   applicationCategory="UtilitiesApplication"
   operatingSystem="Web Browser"
 >
   <div class="space-y-6">
     <!-- 設定區 -->
     <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
-      <h2 class="text-lg font-semibold text-gray-900">合併設定</h2>
+      <h2 class="text-lg font-semibold text-gray-900">
+        <span class="lang-zh">合併設定</span><span class="lang-en">Merge Settings</span>
+      </h2>
       <label class="flex items-center gap-3 cursor-pointer select-none">
-        <input
-          id="compress-checkbox"
-          type="checkbox"
-          class="w-4 h-4 accent-blue-600 cursor-pointer"
-        />
-        <span class="text-sm font-medium text-gray-700">壓縮輸出 PDF（啟用物件流壓縮，可略微縮小檔案）</span>
+        <input id="compress-checkbox" type="checkbox" class="w-4 h-4 accent-blue-600 cursor-pointer" />
+        <span class="text-sm font-medium text-gray-700">
+          <span class="lang-zh">壓縮輸出 PDF（啟用物件流壓縮，可略微縮小檔案）</span>
+          <span class="lang-en">Compress Output PDF (enables object-stream compression)</span>
+        </span>
       </label>
     </div>
 
@@ -75,12 +90,18 @@ const howToSteps = [
     >
       <div class="flex flex-col items-center gap-2 pointer-events-none">
         <span class="text-5xl">📄</span>
-        <p class="text-base font-medium text-blue-700">拖放 PDF 到此處，或點擊選擇（最多 20 個，每個最大 100 MB）</p>
-        <p class="text-sm text-gray-500">支援多個 PDF 同時上傳</p>
+        <p class="text-base font-medium text-blue-700">
+          <span class="lang-zh">拖放 PDF 到此處，或點擊選擇（最多 20 個，每個最大 100 MB）</span>
+          <span class="lang-en">Drag & drop PDFs here, or click to select (up to 20, max 100 MB each)</span>
+        </p>
+        <p class="text-sm text-gray-500">
+          <span class="lang-zh">支援多個 PDF 同時上傳</span>
+          <span class="lang-en">Multiple PDFs supported</span>
+        </p>
       </div>
       <div class="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 pointer-events-none">
         <span>🔒</span>
-        <span>檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span>
+        <span><span class="lang-zh">檔案僅在您的瀏覽器中處理，不會上傳至任何伺服器</span><span class="lang-en">Files processed in your browser only, never uploaded</span></span>
       </div>
       <input
         id="pdf-file-input"
@@ -101,8 +122,15 @@ const howToSteps = [
     <!-- 檔案清單 -->
     <div id="file-list-section" class="hidden space-y-3">
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-semibold text-gray-900">已選擇的 PDF <span id="file-count" class="text-gray-400 font-normal text-sm"></span></h2>
-        <p class="text-xs text-gray-400">拖曳列表項目可調整合併順序</p>
+        <h2 class="text-base font-semibold text-gray-900">
+          <span class="lang-zh">已選擇的 PDF</span>
+          <span class="lang-en">Selected PDFs</span>
+          <span id="file-count" class="text-gray-400 font-normal text-sm"></span>
+        </h2>
+        <p class="text-xs text-gray-400">
+          <span class="lang-zh">拖曳列表項目可調整合併順序</span>
+          <span class="lang-en">Drag items to reorder</span>
+        </p>
       </div>
       <ul id="file-list" class="space-y-2" aria-label="PDF 檔案列表"></ul>
 
@@ -113,14 +141,11 @@ const howToSteps = [
           class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors"
         >
           <span>🔗</span>
-          開始合併
+          <span class="lang-zh">開始合併</span><span class="lang-en">Start Merge</span>
         </button>
-        <button
-          id="clear-btn"
-          class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors"
-        >
+        <button id="clear-btn" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
           <span>🗑️</span>
-          清除全部
+          <span class="lang-zh">清除全部</span><span class="lang-en">Clear All</span>
         </button>
       </div>
     </div>
@@ -130,32 +155,37 @@ const howToSteps = [
       <div class="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4">
         <div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
         <div>
-          <p class="text-sm font-medium text-blue-700">合併中，請稍候...</p>
-          <p class="text-xs text-blue-500">大型 PDF 可能需要 5–10 秒</p>
+          <p class="text-sm font-medium text-blue-700">
+            <span class="lang-zh">合併中，請稍候...</span>
+            <span class="lang-en">Merging, please wait...</span>
+          </p>
+          <p class="text-xs text-blue-500">
+            <span class="lang-zh">大型 PDF 可能需要 5–10 秒</span>
+            <span class="lang-en">Large PDFs may take 5–10 seconds</span>
+          </p>
         </div>
       </div>
     </div>
 
     <!-- 結果區 -->
     <div id="result-section" class="hidden space-y-4">
-      <h2 class="text-lg font-semibold text-gray-900">合併結果</h2>
+      <h2 class="text-lg font-semibold text-gray-900">
+        <span class="lang-zh">合併結果</span><span class="lang-en">Merge Result</span>
+      </h2>
       <div class="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
         <div class="grid grid-cols-2 gap-4 text-sm">
           <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <p class="text-gray-500 mb-1">總頁數</p>
+            <p class="text-gray-500 mb-1"><span class="lang-zh">總頁數</span><span class="lang-en">Total Pages</span></p>
             <p id="result-pages" class="text-2xl font-bold text-gray-900">—</p>
           </div>
           <div class="bg-gray-50 rounded-xl p-4 text-center">
-            <p class="text-gray-500 mb-1">輸出大小</p>
+            <p class="text-gray-500 mb-1"><span class="lang-zh">輸出大小</span><span class="lang-en">Output Size</span></p>
             <p id="result-size" class="text-2xl font-bold text-gray-900">—</p>
           </div>
         </div>
-        <button
-          id="download-btn"
-          class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors"
-        >
+        <button id="download-btn" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors">
           <span>⬇️</span>
-          下載合併後的 PDF
+          <span class="lang-zh">下載合併後的 PDF</span><span class="lang-en">Download Merged PDF</span>
         </button>
       </div>
     </div>

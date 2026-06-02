@@ -9,28 +9,33 @@ const relatedTools = tools.filter((t) => relatedSlugs.includes(t.slug));
 const faqs: FAQItem[] = [
   {
     question: '什麼是 Base64？什麼時候會用到？',
-    answer:
-      'Base64 是一種把二進位資料轉成純文字字元的編碼方式。常見用途包括：在 HTML/CSS 裡內嵌圖片（data URL）、傳送電子郵件附件、或在 JSON 裡傳遞二進位內容。只要你遇到需要把「任意資料」放進「只接受文字」的地方，Base64 就是標準作法。',
+    questionEn: 'What is Base64 and when is it used?',
+    answer: 'Base64 是一種把二進位資料轉成純文字字元的編碼方式。常見用途包括：在 HTML/CSS 裡內嵌圖片（data URL）、傳送電子郵件附件、或在 JSON 裡傳遞二進位內容。只要你遇到需要把「任意資料」放進「只接受文字」的地方，Base64 就是標準作法。',
+    answerEn: 'Base64 encodes binary data as plain text characters. Common uses: embedding images in HTML/CSS as data URLs, sending email attachments, or passing binary content inside JSON. It is the standard approach whenever you need to put arbitrary data into a text-only context.',
   },
   {
     question: 'URL Safe 變體是什麼？什麼情況要用？',
-    answer:
-      '標準 Base64 含有 +、/ 和結尾的 = 字元，這些在 URL 裡有特殊意義，直接放進網址會出問題。URL Safe 變體把 + 換成 -、/ 換成 _、並移除 =，這樣的字串可以安全地放在網址或 Query String 裡。',
+    questionEn: 'What is the URL Safe variant and when should I use it?',
+    answer: '標準 Base64 含有 +、/ 和結尾的 = 字元，這些在 URL 裡有特殊意義，直接放進網址會出問題。URL Safe 變體把 + 換成 -、/ 換成 _、並移除 =，這樣的字串可以安全地放在網址或 Query String 裡。',
+    answerEn: 'Standard Base64 uses +, /, and trailing = characters, which have special meanings in URLs. The URL Safe variant replaces + with -, / with _, and drops =, making the string safe for use in URLs and query strings.',
   },
   {
     question: '我的資料會被上傳嗎？',
-    answer:
-      '完全不會。所有編解碼都在你的瀏覽器裡完成，你的文字或檔案從來不會離開你的裝置。就算斷網，這個工具也能正常運作。',
+    questionEn: 'Will my data be uploaded?',
+    answer: '完全不會。所有編解碼都在你的瀏覽器裡完成，你的文字或檔案從來不會離開你的裝置。就算斷網，這個工具也能正常運作。',
+    answerEn: 'Not at all. All encoding and decoding happens in your browser. Your text or files never leave your device, even when offline.',
   },
   {
     question: '編碼後的字串為什麼比原始檔案大？',
-    answer:
-      'Base64 把每 3 個位元組轉成 4 個字元，因此編碼後的大小約是原始資料的 1.33 倍（多了約 33%）。這是 Base64 的本質，是用「可讀性和相容性」換來的代價，不是工具的問題。',
+    questionEn: 'Why is the encoded string larger than the original?',
+    answer: 'Base64 把每 3 個位元組轉成 4 個字元，因此編碼後的大小約是原始資料的 1.33 倍（多了約 33%）。這是 Base64 的本質，是用「可讀性和相容性」換來的代價，不是工具的問題。',
+    answerEn: 'Base64 converts every 3 bytes into 4 characters, so the encoded output is about 1.33× the original size (roughly 33% larger). This is inherent to Base64 — the cost of readability and compatibility.',
   },
   {
     question: '為什麼這個工具是免費的？',
-    answer:
-      '因為所有運算都在你的瀏覽器裡發生，伺服器幾乎不需要做任何處理，所以我們的成本接近零。工具本身就是這樣能免費提供的原因，不需要登入或付費。',
+    questionEn: 'Why is this tool free?',
+    answer: '因為所有運算都在你的瀏覽器裡發生，伺服器幾乎不需要做任何處理，所以我們的成本接近零。工具本身就是這樣能免費提供的原因，不需要登入或付費。',
+    answerEn: 'Because all processing happens in your browser — our server cost is essentially zero. That is how we can offer it completely free with no login required.',
   },
 ];
 
@@ -39,15 +44,24 @@ const howToSteps = [
   '輸入內容：貼上文字、拖放檔案，工具會即時處理。',
   '複製結果：使用「複製結果」按鈕將 Base64 字串複製到剪貼簿。',
 ];
+const howToStepsEn = [
+  'Choose mode: click the "Text to Base64" or "File to Base64" tab.',
+  'Enter content: paste text or drag & drop a file — the tool processes it in real time.',
+  'Copy result: click "Copy Result" to copy the Base64 string to your clipboard.',
+];
 ---
 
 <ToolLayout
   title="Base64 編解碼線上工具 - 文字與檔案編碼免費轉換"
+  titleEn="Base64 Encoder / Decoder — Free Online Tool"
   description="免費 Base64 編解碼工具，支援文字與檔案編碼，可選 URL Safe 變體。100% 瀏覽器處理，您的資料絕不上傳。"
+  descriptionEn="Free Base64 encoder and decoder. Supports text and file encoding with optional URL Safe variant. 100% browser-side, data never uploaded."
   category="開發者工具"
+  categoryEn="Developer Tools"
   faqs={faqs}
   relatedTools={relatedTools}
   howToSteps={howToSteps}
+  howToStepsEn={howToStepsEn}
   applicationCategory="DeveloperApplication"
   operatingSystem="Web Browser"
 >
@@ -56,10 +70,10 @@ const howToSteps = [
     <!-- 分頁切換 -->
     <div class="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
       <button id="tab-text" class="tab-btn px-5 py-2 rounded-lg text-sm font-medium transition-colors bg-white text-gray-900 shadow-sm">
-        文字轉 Base64
+        <span class="lang-zh">文字轉 Base64</span><span class="lang-en">Text to Base64</span>
       </button>
       <button id="tab-file" class="tab-btn px-5 py-2 rounded-lg text-sm font-medium transition-colors text-gray-500 hover:text-gray-700">
-        檔案轉 Base64
+        <span class="lang-zh">檔案轉 Base64</span><span class="lang-en">File to Base64</span>
       </button>
     </div>
 
